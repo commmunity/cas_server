@@ -1,0 +1,20 @@
+# CasServer
+
+Simple implementation of a Cas Authentication Server. It does not depend on rails but only on active_support and active_record
+
+# Remarks
+
+## Pending
+
+There is no support for Proxy authentication right now
+
+## SSO
+
+There is a flow in SSO cookie, they never expires, which means that sessions will always be available.
+We need to fix this
+
+# Example
+
+Example goes here.
+
+Copyright (c) 2009 Renaud Morvan
