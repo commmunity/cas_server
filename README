@@ -6,7 +6,9 @@ Simple implementation of a Cas Authentication Server. It does not depend on rail
 
 ## Pending
 
-There is no support for Proxy authentication right now
+- There is no support for Proxy authentication right now
+- There is no single sign out, when a user logout previous service ticket remains active, and local service session too
+- Profile management has to be handled and transmitted during /serviceValidate, the design issue to be solved is that it's tgt that could have access to it through authenticator.
 
 ## SSO
 
