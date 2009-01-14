@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>
+<% if !manager.response.error? %>
+  <cas:authenticationSuccess>
+    <cas:user><%= manager.service_ticket.username.to_xs %></cas:user>
+  </cas:authenticationSuccess>
+<% else %>
+  <cas:authenticationFailure code="<%= manager.response.errors.first.error_identifier.to_xs %>">
+    <%= manager.response.errors.first.message.to_xs %>
+  </cas:authenticationFailure>
+<% end %>
+</cas:serviceResponse>
