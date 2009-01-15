@@ -3,11 +3,24 @@ require File.expand_path(File.dirname(__FILE__) + '/shared_ticket_spec')
 
 describe CasServer::Entity::ServiceTicket do
   before do
-    @valid_args = ['username', 'SERVICE']
+    @ticket_granting_ticket = CasServer::Entity::TicketGrantingCookie.generate_for('username')
+    @valid_args = [@ticket_granting_ticket, 'SERVICE']
     @ticket = CasServer::Entity::ServiceTicket.generate_for(*@valid_args)
   end
   
   it_should_behave_like "CAS ticket"
+  
+  describe 'Not in the specification' do
+    it 'MUST maintain a relation with the ticket granting cookie that created him' do
+      @ticket.ticket_granting_cookie.should == @ticket_granting_ticket
+    end
+    
+    it 'should failed if no ticket granting cookie is related' do
+      lambda do
+        CasServer::Entity::ServiceTicket.create!(:username => 'username', :service => 'SERVICE')
+      end.should raise_error(ActiveRecord::RecordInvalid)
+    end
+  end
   
   #3.1.1
   it "MUST only be valid for a given service" do

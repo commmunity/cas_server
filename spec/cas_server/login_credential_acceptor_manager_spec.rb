@@ -69,7 +69,7 @@ describe CasServer::LoginCredentialAcceptorManager do
     
     # not specified in 2.2.4 ?
     it "MUST initiate a single sign-on session" do
-      tgt = mock(CasServer::Entity::TicketGrantingCookie)
+      tgt = CasServer::Entity::TicketGrantingCookie.generate_for('username')
       tgt.should_receive(:to_cookie).and_return('tgt-toto')
       CasServer::Entity::TicketGrantingCookie.should_receive(:generate_for).and_return(tgt)
       @manager.response.should_receive(:set_cookie).with(:tgt, 'tgt-toto')

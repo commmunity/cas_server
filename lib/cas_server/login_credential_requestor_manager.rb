@@ -35,7 +35,7 @@ module CasServer
       if sso_enabled? && !renew?
         if service?
           #generate service ticket and redirect
-          service_ticket = CasServer::Entity::ServiceTicket.generate_for(ticket_granting_ticket.username, service_url)
+          service_ticket = CasServer::Entity::ServiceTicket.generate_for(ticket_granting_ticket, service_url)
           return(redirect_to service_ticket.service_url_with_service_ticket)
         else
           #display message saying your logged, should not really occurred

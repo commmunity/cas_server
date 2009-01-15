@@ -19,6 +19,7 @@ ActiveRecord::Schema.define(:version => 20081222173518) do
   end
 
   create_table "service_tickets", :force => true do |t|
+    t.belongs_to :ticket_granting_cookie
     t.string   "value",       :limit => 255, :null => false
     t.string   "username",                  :null => false
     t.string   "service",     :limit => 255, :null => false

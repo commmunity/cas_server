@@ -6,6 +6,9 @@ require 'uri'
 module CasServer
   module Entity
     class ServiceTicket < ActiveRecord::Base
+      belongs_to :ticket_granting_cookie
+      validates_presence_of :ticket_granting_cookie_id
+      
       include CasServer::I18n
       include CasServer::Entity::Consumable
       include CasServer::Entity::Expirable
@@ -36,8 +39,8 @@ module CasServer
       
       class << self
         # api to generate service ticket
-        def generate_for(username, service)
-          create!(:username => username, :service => service)
+        def generate_for(ticket_granting_cookie, service)
+          ticket_granting_cookie.service_tickets.create!(:username => ticket_granting_cookie.username, :service => service)
         end
         
         def validate_ticket!(value, service)

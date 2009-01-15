@@ -11,6 +11,8 @@ module CasServer
       include CasServer::I18n
       include CasServer::Entity::TicketRandomization
       
+      has_many :service_tickets
+      
       def ticket_prefix
         'TGC-'
       end

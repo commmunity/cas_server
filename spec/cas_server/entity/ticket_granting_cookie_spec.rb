@@ -9,6 +9,20 @@ describe CasServer::Entity::TicketGrantingCookie do
   
   it_should_behave_like "CAS ticket"
   
+  describe 'Not in the specification' do
+    it 'MUST maintain a list of Service Ticket this session has emited' do
+      service_ticket = CasServer::Entity::ServiceTicket.generate_for(@ticket, 'SERVICE')
+      @ticket.reload
+      @ticket.service_tickets.first.should == service_ticket
+    end
+    
+    it 'should failed if no ticket granting cookie is related' do
+      lambda do
+        CasServer::Entity::ServiceTicket.create!(:username => 'username', :service => 'SERVICE')
+      end.should raise_error(ActiveRecord::RecordInvalid)
+    end
+  end
+  
   describe "when cookie is set in client browser" do
     # 3.6.1.
     it "MUST be set to expire at the end of the client's browser session." do

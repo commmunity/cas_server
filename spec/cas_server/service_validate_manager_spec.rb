@@ -3,7 +3,8 @@ require File.dirname(__FILE__) + '/../spec_helper'
 describe CasServer::ServiceValidateManager do
   before do
     @service_url = 'http://toto.com'
-    @ts = CasServer::Entity::ServiceTicket.generate_for('username',@service_url)
+    @tgc= CasServer::Entity::TicketGrantingCookie.generate_for('username')
+    @ts = CasServer::Entity::ServiceTicket.generate_for(@tgc,@service_url)
     @params = {:service => @service_url, :ticket => @ts.value}
     @cookies = {}
     @manager = CasServer::ServiceValidateManager.new(@params,@cookies)
