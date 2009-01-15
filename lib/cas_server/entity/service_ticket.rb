@@ -6,7 +6,7 @@ require 'uri'
 module CasServer
   module Entity
     class ServiceTicket < ActiveRecord::Base
-      belongs_to :ticket_granting_cookie
+      belongs_to :ticket_granting_cookie, :class_name => "CasServer::Entity::TicketGrantingCookie"
       validates_presence_of :ticket_granting_cookie_id
       
       include CasServer::I18n
