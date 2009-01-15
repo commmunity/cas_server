@@ -25,8 +25,8 @@ describe CasServer::ServiceValidateManager do
   it "should display an error in case of invalid params" do
     @params.delete(:service)
     @manager.process
-    @manager.response.should be_error
-    @manager.response.errors.first.class.should == CasServer::MissingMandatoryParams
+    @manager.should be_error
+    @manager.errors.first.class.should == CasServer::MissingMandatoryParams
   end
   
   describe 'when parameters new is set' do
@@ -41,31 +41,31 @@ describe CasServer::ServiceValidateManager do
   it "may use INVALID_REQUEST 'code' in case missing mandatory params" do
     @params.delete(:service)
     @manager.process
-    @manager.response.should be_error
-    @manager.response.errors.first.error_identifier.should == 'INVALID_REQUEST'
+    @manager.should be_error
+    @manager.errors.first.error_identifier.should == 'INVALID_REQUEST'
   end
   
   #2.5.3
   it "may use INVALID_TICKET 'code' when ticket provided was not valid" do
     @params[:ticket] = 'bad'
     @manager.process
-    @manager.response.should be_error
-    @manager.response.errors.first.error_identifier.should == 'INVALID_TICKET'
+    @manager.should be_error
+    @manager.errors.first.error_identifier.should == 'INVALID_TICKET'
   end
   
   #2.5.3
   it "may use INVALID_SERVICE 'code' when the ticket provided was valid, but the service specified was not" do
     @params[:service] = 'http://tata.com'
     @manager.process
-    @manager.response.should be_error
-    @manager.response.errors.first.error_identifier.should == 'INVALID_SERVICE'
+    @manager.should be_error
+    @manager.errors.first.error_identifier.should == 'INVALID_SERVICE'
   end
   
   #2.5.3
   it "MUST invalidate the ticket and disallow future validation of that same ticket in case of INVALID_SERVICE" do
     @params[:service] = 'http://tata.com'
     @manager.process
-    @manager.response.should be_error
+    @manager.should be_error
     lambda {
       @ts.class.validate_ticket!(@ts.value,@ts.service)
     }.should raise_error(CasServer::InvalidTicket)

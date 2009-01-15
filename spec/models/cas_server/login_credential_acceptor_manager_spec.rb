@@ -14,15 +14,15 @@ describe CasServer::LoginCredentialAcceptorManager do
       it "MUST have #{mandatory_param} parameter" do
         @params.delete(mandatory_param)
         @manager.process
-        @manager.response.should be_error
-        @manager.response.errors.first.class.should == CasServer::MissingMandatoryParams
+        @manager.should be_error
+        @manager.errors.first.class.should == CasServer::MissingMandatoryParams
       end
     end
     
     # 2.2.1.
     it "SHOULD accept any other params" do
       @params[:unknown] = 'Unknown param'
-      @manager.response.should_not be_error
+      @manager.should be_success
     end
     
     # 3.5.1

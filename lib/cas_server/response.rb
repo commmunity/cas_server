@@ -43,8 +43,12 @@ module CasServer
       !@warnings.empty?
     end
     
+    def success?
+      @errors.empty?
+    end
+    
     def error?
-      !@errors.empty?
+      !success?
     end
   end
 end
