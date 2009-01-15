@@ -19,6 +19,19 @@ describe CasServer::Entity::TicketGrantingCookie do
     it "MUST have it's cookie path to be as restrictive as possible." do
       @ticket.to_cookie[:path].should == '/cas'
     end
+    
+    # Not in spec
+    it "MUST be a secure cookie if ssl is enabled" do
+      CasServer::Configuration.ssl_enabled = true
+      @ticket.to_cookie[:secure].should be_true
+    end
+    
+    # Not in spec
+    it "MUST NOT be a secure cookie if ssl is disabled" do
+      CasServer::Configuration.ssl_enabled = false
+      @ticket.to_cookie[:secure].should be_nil
+    end
+    
   end
   
   # 3.6.1.

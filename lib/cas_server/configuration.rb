@@ -5,5 +5,8 @@ module CasServer
     
     mattr_accessor :authenticator
     @@authenticator = :mock
+    
+    mattr_accessor :ssl_enabled
+    @@ssl_enabled = false
   end
 end

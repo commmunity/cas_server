@@ -16,7 +16,9 @@ module CasServer
       end
       
       def to_cookie
-        {:value => value, :path => '/cas', :secure => true, :http_only => false}
+        cookie = {:value => value, :path => '/cas', :http_only => false}
+        cookie[:secure]=true if CasServer::Configuration.ssl_enabled
+        cookie
       end
       
       class << self
