@@ -19,7 +19,11 @@ module CasServer
     def sso_enabled?
       ticket_granting_ticket
     end
-  
+    
+    def url
+      params[:url]
+    end
+    
     def url?
       params[:url].present?
     end
