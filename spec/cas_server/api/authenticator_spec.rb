@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../../spec_helper'
+require File.dirname(__FILE__) + '/../../spec_helper'
 
 describe CasServer::Api::Authenticator do
   it "should raise InvalidAuthenticator in case of invalid Implementation" do
