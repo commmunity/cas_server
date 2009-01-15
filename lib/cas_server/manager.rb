@@ -45,7 +45,7 @@ module CasServer
       params[:service]
     end
   
-    delegate :render_template, :redirect_to, :errors, :error?, :success?, :warnings, :set_cookie, :to => :response
+    delegate :render_template, :redirect_to, :errors, :error?, :success?, :warnings, :warning?, :set_cookie, :to => :response
   
     # Process the logic, validation, ... all the dirty specification work
     def process!
