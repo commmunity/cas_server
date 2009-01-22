@@ -1,15 +1,10 @@
 require 'uri'
 
 module CasServer
-  
   module Api
-    
     module DomainParser
-      
       class Base
-        
-        class << self
-          
+        class << self       
           def implementations
             @@implementations ||= []
           end
@@ -22,7 +17,6 @@ module CasServer
           def model
             @model ||= name.demodulize.underscore.to_sym
           end
-          
         end
         
         attr_reader :service_url
@@ -40,12 +34,8 @@ module CasServer
         def validate!
           raise CasServer::InvalidServiceURL.new(service_url) unless valid?
           true
-        end
-        
-      end
-      
-    end
-    
-  end
-  
-end
+        end        
+      end #Base
+    end #DomainParser
+  end #Api
+end #CasServer

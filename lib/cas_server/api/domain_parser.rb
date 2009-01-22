@@ -3,11 +3,8 @@ Dir.glob(File.join(File.dirname(__FILE__),'domain_parser', '*')).each do |f|
 end
 
 module CasServer
-  
   module Api
-    
     module DomainParser
-      
       def self.build(service_url)
         current_implementation.new(service_url)
       end
@@ -17,9 +14,6 @@ module CasServer
         raise InvalidDomainParser.new(CasServer::Configuration.domain_parser) unless implementation
         implementation
       end
-      
-    end
-    
-  end
-  
-end
+    end #DomainParser
+  end #Api
+end #CasServer
