@@ -12,4 +12,10 @@ describe CasServer::Api::DomainParser do
     CasServer::Configuration.should_receive(:domain_parser).and_return(:mock)
     CasServer::Api::DomainParser.current_implementation.should be(CasServer::Api::DomainParser::Mock)
   end
+  
+  it "builds domain parser" do
+    domain_parser = CasServer::Api::DomainParser.build('http://google.com')
+    domain_parser.should be_an_instance_of(CasServer::Api::DomainParser::Mock)
+    domain_parser.service_url.should == URI.parse('http://google.com')
+  end
 end
