@@ -37,6 +37,11 @@ module CasServer
           raise NotImplementedError.new("#{self.class.name}#valid?")
         end
         
+        def validate!
+          raise CasServer::InvalidServiceURL.new(service_url) unless valid?
+          true
+        end
+        
       end
       
     end
