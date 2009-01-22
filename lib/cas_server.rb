@@ -11,9 +11,9 @@ module CasServer
     module Authenticator
       autoload :Base,               "#{CAS_SERVER_PATH}/api/authenticator/base"
     end
+    autoload :DomainParser,         "#{CAS_SERVER_PATH}/api/domain_parser"
     module DomainParser
-      autoload :Base,        "#{CAS_SERVER_PATH}/api/domain_parser/base"
-      autoload :Mock,        "#{CAS_SERVER_PATH}/api/domain_parser/mock"
+      autoload :Base,               "#{CAS_SERVER_PATH}/api/domain_parser/base"
     end
   end
   

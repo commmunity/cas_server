@@ -8,6 +8,23 @@ module CasServer
       
       class Base
         
+        class << self
+          
+          def implementations
+            @@implementations ||= []
+          end
+
+          def inherited(subklass)
+            implementations << subklass
+            super
+          end
+
+          def model
+            @model ||= name.demodulize.underscore.to_sym
+          end
+          
+        end
+        
         attr_reader :service_url
       
         def initialize(service_url)

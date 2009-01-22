@@ -40,6 +40,15 @@ module CasServer
     end
   end
   
+  # Configuration issue with selected domain parser
+  class InvalidDomainParser < Error
+    attr_reader :domain_parser
+    def initialize(domain_parser, msg = nil)
+      @domain_parser = domain_parser
+      super(msg || "Invalid domain parser: #{domain_parser.inspect}")
+    end
+  end
+  
   # Failed authentication attempt
   class AuthenticationFailed < Error
   end
