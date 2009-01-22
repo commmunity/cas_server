@@ -8,6 +8,10 @@ describe CasServer::Api::DomainParser::Base do
     }.should raise_error(CasServer::InvalidServiceURL)
     
     lambda {
+      CasServer::Api::DomainParser::Base.new('ftp://www.google.fr')
+    }.should raise_error(CasServer::InvalidServiceURL)
+    
+    lambda {
       CasServer::Api::DomainParser::Base.new('http://www.google.com')
     }.should_not raise_error
   end
