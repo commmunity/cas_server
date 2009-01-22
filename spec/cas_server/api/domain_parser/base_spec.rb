@@ -16,6 +16,12 @@ describe CasServer::Api::DomainParser::Base do
     }.should_not raise_error
   end
   
+  it 'accepts https URLs' do
+    lambda {
+      CasServer::Api::DomainParser::Base.new('https://www.google.com')
+    }.should_not raise_error
+  end
+  
   it 'has a service url' do
     CasServer::Api::DomainParser::Base.new('http://www.google.com').service_url.should == URI.parse('http://www.google.com')
     CasServer::Api::DomainParser::Base.new(URI.parse('http://www.google.com')).service_url.should == URI.parse('http://www.google.com')
