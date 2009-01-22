@@ -54,6 +54,15 @@ module CasServer
     end
   end
   
+  class InvalidServiceURL < Error
+    attr_reader :url
+    
+    def initialize(url, msg = nil)
+      @url = url
+      super(msg || "cas_server.error.invalid_service_url.#{i18n_identifier}")
+    end
+  end
+  
   # Service Ticket found but does not correspond to the service
   class InvalidService < InvalidTicket
   end
