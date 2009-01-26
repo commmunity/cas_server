@@ -38,7 +38,7 @@ module CasServer
       end
       
       class << self
-        # api to generate service ticket
+        # Extension to generate service ticket
         def generate_for(ticket_granting_cookie, service)
           ticket_granting_cookie.service_tickets.create!(:username => ticket_granting_cookie.username, :service => service)
         end

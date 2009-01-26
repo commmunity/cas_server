@@ -46,7 +46,7 @@ describe CasServer::LoginCredentialAcceptorManager do
     before do
       @params[:service] = @service_url
       CasServer::Entity::LoginTicket.should_receive(:validate_ticket!)
-      CasServer::Api::Authenticator.should_receive(:authenticate).and_return(true)
+      CasServer::Extension::Authenticator.should_receive(:authenticate).and_return(true)
     end
        
     # 2.2.4
@@ -81,7 +81,7 @@ describe CasServer::LoginCredentialAcceptorManager do
     before do
       @params[:service] = @service_url
       CasServer::Entity::LoginTicket.should_receive(:validate_ticket!)
-      CasServer::Api::Authenticator.should_receive(:authenticate).and_return(false)
+      CasServer::Extension::Authenticator.should_receive(:authenticate).and_return(false)
       @response = @manager.process
     end
     

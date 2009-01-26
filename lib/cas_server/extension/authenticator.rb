@@ -3,7 +3,7 @@ Dir.glob(File.join(File.dirname(__FILE__),'authenticator', '*')).each do |f|
 end
 
 module CasServer
-  module Api
+  module Extension
     module Authenticator
       def self.authenticate(username, password)
         current_implementation.authenticate(username, password)
@@ -19,5 +19,5 @@ module CasServer
         authenticator_implementation
       end
     end #Authentication
-  end #Api
+  end #Extension
 end #CasServer

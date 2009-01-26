@@ -24,7 +24,7 @@ module CasServer
       end
       
       class << self
-        # Api to generate ticket granting ticket
+        # Extension to generate ticket granting ticket
         def generate_for(username)
           create!(:username => username)
         end

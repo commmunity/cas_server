@@ -1,8 +1,8 @@
 require 'uri'
 
 module CasServer
-  module Api
-    module DomainParser
+  module Extension
+    module ServiceManager
       class Base
         class << self       
           def implementations
@@ -36,6 +36,6 @@ module CasServer
           true
         end        
       end #Base
-    end #DomainParser
-  end #Api
+    end #ServiceManager
+  end #Extension
 end #CasServer

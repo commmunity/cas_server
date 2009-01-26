@@ -15,7 +15,7 @@ module CasServer
       end
       
       class << self
-        # api to generate login ticket
+        # Extension to generate login ticket
         def generate_for
           create!
         end

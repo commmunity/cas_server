@@ -27,7 +27,7 @@ module CasServer
       CasServer::Entity::LoginTicket.validate_ticket!(lt)
       
       #LoginTicket valid, check authentication
-      CasServer::Api::Authenticator.authenticate!(username, password)
+      CasServer::Extension::Authenticator.authenticate!(username, password)
       
       #Authentication successfull, create ticket granting ticket cookie and set it
       ticket_granting_ticket = CasServer::Entity::TicketGrantingCookie.generate_for(username)

@@ -1,19 +1,33 @@
+require 'rubygems'
+require 'rack'
+require 'rack/request'
+require 'rack/response'
+
 module CasServer
   CAS_SERVER_PATH = File.expand_path(File.join(File.dirname(__FILE__), "cas_server"))
   
+  module Rack
+    autoload :Request,              "#{CAS_SERVER_PATH}/rack/request"
+    autoload :Response,             "#{CAS_SERVER_PATH}/rack/response"
+    module Api
+      autoload :Base,               "#{CAS_SERVER_PATH}/rack/api/base"
+    end
+    autoload :Router,               "#{CAS_SERVER_PATH}/rack/router"
+  end
+    
   autoload :Configuration,          "#{CAS_SERVER_PATH}/configuration"
   autoload :Manager,                "#{CAS_SERVER_PATH}/manager"
   autoload :Response,               "#{CAS_SERVER_PATH}/response"
   autoload :I18n,                   "#{CAS_SERVER_PATH}/i18n"
   
-  module Api
-    autoload :Authenticator,        "#{CAS_SERVER_PATH}/api/authenticator"
+  module Extension
+    autoload :Authenticator,        "#{CAS_SERVER_PATH}/extension/authenticator"
     module Authenticator
-      autoload :Base,               "#{CAS_SERVER_PATH}/api/authenticator/base"
+      autoload :Base,               "#{CAS_SERVER_PATH}/extension/authenticator/base"
     end
-    autoload :DomainParser,         "#{CAS_SERVER_PATH}/api/domain_parser"
-    module DomainParser
-      autoload :Base,               "#{CAS_SERVER_PATH}/api/domain_parser/base"
+    autoload :ServiceManager,       "#{CAS_SERVER_PATH}/extension/service_manager"
+    module ServiceManager
+      autoload :Base,               "#{CAS_SERVER_PATH}/extension/service_manager/base"
     end
   end
   

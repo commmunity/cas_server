@@ -41,11 +41,11 @@ module CasServer
   end
   
   # Configuration issue with selected domain parser
-  class InvalidDomainParser < Error
-    attr_reader :domain_parser
-    def initialize(domain_parser, msg = nil)
-      @domain_parser = domain_parser
-      super(msg || "Invalid domain parser: #{domain_parser.inspect}")
+  class InvalidServiceManager < Error
+    attr_reader :service_manager
+    def initialize(service_manager, msg = nil)
+      @service_manager = service_manager
+      super(msg || "Invalid domain parser: #{service_manager.inspect}")
     end
   end
   

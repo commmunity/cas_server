@@ -1,5 +1,5 @@
 module CasServer
-  module Api
+  module Extension
     module Authenticator
       class Base
         # available authenticator implementation
@@ -17,5 +17,5 @@ module CasServer
         end
       end #Base
     end #Authenticator
-  end #Api
+  end #Extension
 end #CasServer
