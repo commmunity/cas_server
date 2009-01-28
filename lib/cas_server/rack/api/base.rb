@@ -3,6 +3,7 @@ module CasServer
   module Rack
     module Api
       class Base
+        include CasServer::Loggable
         class_inheritable_reader :accepted_parameters
         write_inheritable_attribute :accepted_parameters, []
         class_inheritable_reader :demanded_parameters
@@ -61,12 +62,14 @@ module CasServer
           @request = CasServer::Rack::Request.new(env)
           @response = CasServer::Rack::Response.new
         
+          log.debug "Start processing of #{self.class.name} with params #{params.inspect}"
+        
           #check against mandatory parameters
           validate_parameters!
         
           #Parse the service with configured service manager
           @service_manager = CasServer::Extension::ServiceManager.build(params['service'], self) 
-        
+          
           #Step 1: basic security, delegate access authorization to service manager
           service_manager.validate!
         
@@ -76,6 +79,7 @@ module CasServer
           #handle the response or delegate to higher level for rendering
         
         rescue CasServer::Error => error
+          log.debug "Exception #{error.message} has been caught during #{self.class.name} execution"
           send exception_handler, error
         end
       

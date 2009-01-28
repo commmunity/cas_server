@@ -4,8 +4,6 @@ rescue LoadError
   require 'rubygems'
   require 'rack'
 end unless defined?(Rack)
-require 'rack/request'
-require 'rack/response'
 
 begin
   require 'active_support'
@@ -37,6 +35,7 @@ module CasServer
   autoload :Manager,                "#{CAS_SERVER_PATH}/manager"
   autoload :Response,               "#{CAS_SERVER_PATH}/response"
   autoload :I18n,                   "#{CAS_SERVER_PATH}/i18n"
+  autoload :MockLogger,             "#{CAS_SERVER_PATH}/logger"
   
   module Extension
     autoload :Authenticator,        "#{CAS_SERVER_PATH}/extension/authenticator"
@@ -65,3 +64,4 @@ module CasServer
 end
 
 require File.join(CasServer::CAS_SERVER_PATH, "error")
+require File.join(CasServer::CAS_SERVER_PATH, "logger")

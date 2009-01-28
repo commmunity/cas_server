@@ -1,5 +1,6 @@
 ENV["RAILS_ENV"] = "test"
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'cas_server'))
+CasServer::Configuration.logger = CasServer::SilentLogger.new
 
 def load_schema
   ActiveRecord::Base.silence do

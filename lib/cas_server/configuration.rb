@@ -16,6 +16,6 @@ module CasServer
     @@ssl_enabled = false
     
     mattr_accessor :logger
-    @@logger =  CasServer::Logger
+    @@logger = CasServer::MockLogger.new
   end
 end
