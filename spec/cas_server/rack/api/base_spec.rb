@@ -27,6 +27,7 @@ describe CasServer::Rack::Api::Base do
     @instance.should_receive(:process!).and_raise(@exception)
     CasServer::Configuration.should_receive(:exception_handler).and_return(:whatever_method_to_handle_exception)
     @instance.should_receive(:whatever_method_to_handle_exception).with(@exception)
+    @instance.should_not_receive(:default_exception_handler)
     @instance.call(@mock_env)
   end
   

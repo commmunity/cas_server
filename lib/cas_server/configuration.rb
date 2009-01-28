@@ -14,5 +14,8 @@ module CasServer
     
     mattr_accessor :ssl_enabled
     @@ssl_enabled = false
+    
+    mattr_accessor :logger
+    @@logger =  CasServer::Logger
   end
 end

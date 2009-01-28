@@ -1,13 +1,25 @@
-require 'rubygems'
-
-unless defined?(Rack)
+begin
   require 'rack'
-  require 'rack/request'
-  require 'rack/response'
-end
+rescue LoadError
+  require 'rubygems'
+  require 'rack'
+end unless defined?(Rack)
+require 'rack/request'
+require 'rack/response'
 
-require 'active_support' unless defined?(ActiveSupport)
-require 'active_record'  unless defined?(ActiveRecord)
+begin
+  require 'active_support'
+rescue LoadError
+  require 'rubygems'
+  require 'active_support'
+end unless defined?(ActiveSupport)
+
+begin
+  require 'active_record'
+rescue LoadError
+  require 'rubygems'
+  require 'active_record'
+end unless defined?(ActiveRecord)
 
 module CasServer
   CAS_SERVER_PATH = File.expand_path(File.join(File.dirname(__FILE__), "cas_server"))
@@ -53,4 +65,3 @@ module CasServer
 end
 
 require File.join(CasServer::CAS_SERVER_PATH, "error")
-
