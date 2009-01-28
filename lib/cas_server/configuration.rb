@@ -9,6 +9,9 @@ module CasServer
     mattr_accessor :service_manager
     @@service_manager = :mock
     
+    mattr_accessor :exception_handler
+    @@exception_handler = :default_exception_handler
+    
     mattr_accessor :ssl_enabled
     @@ssl_enabled = false
   end

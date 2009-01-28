@@ -7,7 +7,7 @@ module CasServer
         write_inheritable_attribute :accepted_parameters, []
         class_inheritable_reader :demanded_parameters
         write_inheritable_attribute :demanded_parameters, []
-      
+        
         class << self
           # Specify accepted params for this REST Web Service
           def accept(*parameters)
@@ -49,6 +49,10 @@ module CasServer
           ticket_granting_ticket
         end
       
+        def exception_handler
+          CasServer::Configuration.exception_handler
+        end
+      
         def initialize(options = {})
         end
       
@@ -61,7 +65,7 @@ module CasServer
           validate_parameters!
         
           #Parse the service with configured service manager
-          @service_manager = CasServer::Extension::ServiceManager.build(params[:service], self) 
+          @service_manager = CasServer::Extension::ServiceManager.build(params['service'], self) 
         
           #Step 1: basic security, delegate access authorization to service manager
           service_manager.validate!
@@ -72,8 +76,7 @@ module CasServer
           #handle the response or delegate to higher level for rendering
         
         rescue CasServer::Error => error
-          errors << error
-          #should render something (or delegate, not sure now)
+          send exception_handler, error
         end
       
         def process!
@@ -85,6 +88,19 @@ module CasServer
             self.class.demanded_parameters.each do |param| 
               raise MissingMandatoryParams.new(param) unless self.params.has_key?(param)
             end
+          end
+          
+          def default_exception_handler(exception)
+            errors << exception
+            CasServer::Rack::Response.new.finish do |r|
+              r.status = 500
+              r.write = '<html><head><title>Error</title></head>'
+              errors.each do |error|
+                r.write error.to_s
+              end
+              r.write = '</html>'
+            end
+            #should render something (or delegate, not sure now)
           end
       end #Base
     end #Api

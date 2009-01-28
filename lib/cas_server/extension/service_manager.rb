@@ -5,8 +5,8 @@ end
 module CasServer
   module Extension
     module ServiceManager
-      def self.build(service_url)
-        current_implementation.new(service_url)
+      def self.build(service_url, rack_server)
+        current_implementation.new(service_url, rack_server)
       end
       
       def self.current_implementation

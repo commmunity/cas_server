@@ -1,7 +1,13 @@
 require 'rubygems'
-require 'rack'
-require 'rack/request'
-require 'rack/response'
+
+unless defined?(Rack)
+  require 'rack'
+  require 'rack/request'
+  require 'rack/response'
+end
+
+require 'active_support' unless defined?(ActiveSupport)
+require 'active_record'  unless defined?(ActiveRecord)
 
 module CasServer
   CAS_SERVER_PATH = File.expand_path(File.join(File.dirname(__FILE__), "cas_server"))
