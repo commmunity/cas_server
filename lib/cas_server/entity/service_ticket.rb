@@ -18,6 +18,10 @@ module CasServer
         'ST-'
       end
       
+      def extra_attributes
+        {}
+      end
+      
       def service_url_with_service_ticket
         return nil if service.blank?
 
@@ -53,6 +57,7 @@ module CasServer
           raise CasServer::ExpiredTicket.new(ticket) if ticket.expired?
           raise CasServer::ConsumedTicket.new(ticket) if ticket.consumed?
           ticket.consume!
+          ticket
         end
       end
     end

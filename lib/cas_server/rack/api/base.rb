@@ -26,11 +26,19 @@ module CasServer
         attr_reader :service_manager
       
         delegate :params, :cookies, :to => :request
-        delegate :set_cookie, :delete_cookie, :to => :response
+        delegate :set_cookie, :delete_cookie, :redirect?, :to => :response
       
         #array of errors store in env hash (so that they will be accessible to higher level, rails...)
         def errors
           @request.env['cas_server.errors'] ||= []
+        end
+        
+        def success?
+          errors.empty?
+        end
+        
+        def error?
+          !success?
         end
       
         #array of errors store in env hash (so that they will be accessible to higher level: rails...)
@@ -38,6 +46,14 @@ module CasServer
           @request.env['cas_server.warnings'] ||= []
         end
       
+        def warning?
+          !warnings.empty?
+        end
+        
+        def service_url
+          params['service']
+        end
+        
         def ticket_granting_cookie
           cookies['tgt']
         end
@@ -61,12 +77,14 @@ module CasServer
           #Parse the request
           @request = CasServer::Rack::Request.new(env)
           @response = CasServer::Rack::Response.new
+          @response.status = 404
+          @response['Content-Type'] = 'text/plain'
         
           log.debug "Start processing of #{self.class.name} with params #{params.inspect}"
         
           #check against mandatory parameters
           validate_parameters!
-        
+          
           #Parse the service with configured service manager
           @service_manager = CasServer::Extension::ServiceManager.build(params['service'], self) 
           
@@ -77,12 +95,30 @@ module CasServer
           process!
         
           #handle the response or delegate to higher level for rendering
-        
+          @response = @response
+          return @response.finish
         rescue CasServer::Error => error
           log.debug "Exception #{error.message} has been caught during #{self.class.name} execution"
+          errors << error
           send exception_handler, error
         end
-      
+        
+        def render_xml(content)
+         @response['Content-Type'] = 'application/xml; charset=utf-8'
+         @response.status = 200
+         @response.body = content
+        end
+        
+        def redirect_to(uri, status_code = 302)
+          @response.status = 302
+          @response['Content-Type'] = 'text/plain'
+          @response['Location'] = uri
+        end
+        
+        def delegate_render?
+          @response.not_found?
+        end
+        
         def process!
           raise NotImplementedError
         end
@@ -90,21 +126,16 @@ module CasServer
         protected
           def validate_parameters!
             self.class.demanded_parameters.each do |param| 
-              raise MissingMandatoryParams.new(param) unless self.params.has_key?(param)
+              raise MissingMandatoryParams.new(param) unless self.params.has_key?(param.to_s)
             end
           end
           
           def default_exception_handler(exception)
-            errors << exception
-            CasServer::Rack::Response.new.finish do |r|
-              r.status = 500
-              r.write = '<html><head><title>Error</title></head>'
-              errors.each do |error|
-                r.write error.to_s
-              end
-              r.write = '</html>'
-            end
-            #should render something (or delegate, not sure now)
+            #delegate (display login screen)
+            @response.status = 404
+            @response['Content-Type'] = 'text/plain'
+            @response.body = []
+            return @response.finish
           end
       end #Base
     end #Api

@@ -27,8 +27,13 @@ module CasServer
     autoload :Response,             "#{CAS_SERVER_PATH}/rack/response"
     module Api
       autoload :Base,               "#{CAS_SERVER_PATH}/rack/api/base"
+      autoload :Logout,             "#{CAS_SERVER_PATH}/rack/api/logout"
+      autoload :ServiceValidate,    "#{CAS_SERVER_PATH}/rack/api/service_validate"
+      autoload :CredentialAcceptor, "#{CAS_SERVER_PATH}/rack/api/credential_acceptor"
+      autoload :CredentialRequestor,"#{CAS_SERVER_PATH}/rack/api/credential_requestor"
     end
     autoload :Router,               "#{CAS_SERVER_PATH}/rack/router"
+    autoload :RouteCriteria,        "#{CAS_SERVER_PATH}/rack/route_criteria"
   end
     
   autoload :Configuration,          "#{CAS_SERVER_PATH}/configuration"

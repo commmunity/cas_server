@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/../../../spec_helper'
 describe CasServer::Rack::Api::Base do
   before do
     @instance = CasServer::Rack::Api::Base.new
-    @service  = 'http://test.service.com' 
+    @service  = 'http://test.service.com'
     @mock_env = Rack::MockRequest.env_for("http://example.com:8080/?service=#{@service}")
   end
   
