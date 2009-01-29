@@ -61,11 +61,6 @@ module CasServer
     autoload :Expirable,            "#{CAS_SERVER_PATH}/entity/expirable"
     autoload :TicketRandomization,  "#{CAS_SERVER_PATH}/entity/ticket_randomization"
   end
-  
-  autoload  :LoginCredentialRequestorManager, "#{CAS_SERVER_PATH}/login_credential_requestor_manager"
-  autoload  :LoginCredentialAcceptorManager,  "#{CAS_SERVER_PATH}/login_credential_acceptor_manager"
-  autoload  :ServiceValidateManager,          "#{CAS_SERVER_PATH}/service_validate_manager"
-  autoload  :LogoutManager,                   "#{CAS_SERVER_PATH}/logout_manager"
 end
 
 require File.join(CasServer::CAS_SERVER_PATH, "error")
