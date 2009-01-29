@@ -19,7 +19,7 @@ module CasServer
       end
       
       def extra_attributes
-        {}
+        {:uuid => username, :firstname => username, :lastname => username, :email => username}
       end
       
       def service_url_with_service_ticket

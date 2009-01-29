@@ -23,10 +23,12 @@ module CasServer
         def process!
           #validate against LoginTicket
           CasServer::Entity::LoginTicket.validate_ticket!(lt)
-
+          
+          debug 'Try to authenticate with authenticator'
           #LoginTicket valid, check authentication
           CasServer::Extension::Authenticator.authenticate!(username, password)
 
+          debug 'Authentication successful'
           #Authentication successful, create ticket granting ticket cookie and set it
           ticket_granting_ticket = CasServer::Entity::TicketGrantingCookie.generate_for(username)
           set_cookie :tgt, ticket_granting_ticket.to_cookie

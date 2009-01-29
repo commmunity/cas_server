@@ -76,11 +76,11 @@ module CasServer
         def call(env)
           #Parse the request
           @request = CasServer::Rack::Request.new(env)
-          @response = CasServer::Rack::Response.new
+          @response = Rack::Response.new
           @response.status = 404
           @response['Content-Type'] = 'text/plain'
         
-          log.debug "Start processing of #{self.class.name} with params #{params.inspect}"
+          debug "Start processing of #{self.class.name} with params #{params.inspect}"
         
           #check against mandatory parameters
           validate_parameters!
@@ -95,18 +95,17 @@ module CasServer
           process!
         
           #handle the response or delegate to higher level for rendering
-          @response = @response
           return @response.finish
         rescue CasServer::Error => error
-          log.debug "Exception #{error.message} has been caught during #{self.class.name} execution"
+          debug "Exception #{error.message} has been caught during #{self.class.name} execution"
           errors << error
           send exception_handler, error
         end
         
         def render_xml(content)
-         @response['Content-Type'] = 'application/xml; charset=utf-8'
-         @response.status = 200
-         @response.body = content
+          @response['Content-Type'] = 'application/xml; charset=utf-8'
+          @response.status = 200
+          @response.write content
         end
         
         def redirect_to(uri, status_code = 302)

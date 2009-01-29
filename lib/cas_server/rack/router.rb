@@ -14,9 +14,8 @@ module CasServer
       
       #app launcher
       def run(app)
-        log.debug "[Router] #{app.class.name} launched"
-        #app.new.call(@env)
-        NOT_FOUND 
+        debug "#{app.name} launched"
+        app.new.call(@env)
       end
       
       
@@ -24,7 +23,7 @@ module CasServer
         return NOT_FOUND unless env['PATH_INFO'] =~ CAS_NAMESPACE
         @env = env
         
-        log.debug '[Router] Request seems to be a cas request, start routing'
+        debug 'Request seems to be a cas request, start routing'
         request = Request.new(env)
         
         case request
@@ -36,9 +35,10 @@ module CasServer
           run Api::ServiceValidate
         when r(:*, '/cas/logout')
           run Api::Logout
+        else
+          debug 'Nothing match'
+          NOT_FOUND
         end
-        log.debug '[Router] Nothing match'
-        NOT_FOUND
       end
     end #Application
   end #Rack
