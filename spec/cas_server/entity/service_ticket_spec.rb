@@ -3,8 +3,8 @@ require File.expand_path(File.dirname(__FILE__) + '/shared_ticket_spec')
 
 describe CasServer::Entity::ServiceTicket do
   before do
-    @ticket_granting_ticket = CasServer::Entity::TicketGrantingCookie.generate_for('username')
-    @valid_args = [@ticket_granting_ticket, 'SERVICE']
+    @ticket_granting_ticket = CasServer::Entity::TicketGrantingCookie.generate_for(@authenticator_mock)
+    @valid_args = [@ticket_granting_ticket, 'http://service.com']
     @ticket = CasServer::Entity::ServiceTicket.generate_for(*@valid_args)
   end
   
@@ -15,9 +15,15 @@ describe CasServer::Entity::ServiceTicket do
       @ticket.ticket_granting_cookie.should == @ticket_granting_ticket
     end
     
+    it "may access extra_attributes available in ticket_granting_ticket" do
+      @ticket_granting_ticket.reload
+      st = @ticket_granting_ticket.service_tickets.create!(:username => 'username', :service => 'http://service.com')
+      st.extra_attributes.should == @authenticator_mock.extra_attributes
+    end
+    
     it 'should failed if no ticket granting cookie is related' do
       lambda do
-        CasServer::Entity::ServiceTicket.create!(:username => 'username', :service => 'SERVICE')
+        CasServer::Entity::ServiceTicket.create!(:username => 'username', :service => 'http://service.com')
       end.should raise_error(ActiveRecord::RecordInvalid)
     end
   end
@@ -25,13 +31,13 @@ describe CasServer::Entity::ServiceTicket do
   #3.1.1
   it "MUST only be valid for a given service" do
     lambda do
-      CasServer::Entity::ServiceTicket.validate_ticket!(@ticket.value,'SERVICE2')
+      CasServer::Entity::ServiceTicket.validate_ticket!(@ticket.value,'http://service.com2')
     end.should raise_error(CasServer::InvalidService)
   end
   
   #3.1.1
   it "SHOULD NOT use service identifier in the service ticket" do
-    @ticket.value.should_not match(/SERVICE/)
+    @ticket.value.should_not match(/http:\/\/service.com/)
   end
   
   #3.1.1

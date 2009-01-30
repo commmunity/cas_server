@@ -5,12 +5,8 @@ end
 module CasServer
   module Extension
     module Authenticator
-      def self.authenticate(username, password)
-        current_implementation.authenticate(username, password)
-      end
-      
-      def self.authenticate!(*args)
-        authenticate(*args) || raise(AuthenticationFailed)
+      def self.build(*args)
+        current_implementation.new(*args)
       end
       
       def self.current_implementation

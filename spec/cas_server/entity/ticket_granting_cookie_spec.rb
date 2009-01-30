@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/shared_ticket_spec')
 
 describe CasServer::Entity::TicketGrantingCookie do
   before do
-    @valid_args = ['username']
+    @valid_args = [@authenticator_mock]
     @ticket = CasServer::Entity::TicketGrantingCookie.generate_for(*@valid_args)
   end
   
@@ -14,6 +14,11 @@ describe CasServer::Entity::TicketGrantingCookie do
       service_ticket = CasServer::Entity::ServiceTicket.generate_for(@ticket, 'SERVICE')
       @ticket.reload
       @ticket.service_tickets.first.should == service_ticket
+    end
+    
+    it "MUST store extra_attributes if provided by authenticator" do
+      @ticket.reload
+      @ticket.extra_attributes.should == @authenticator_mock.extra_attributes
     end
     
     it 'should failed if no ticket granting cookie is related' do

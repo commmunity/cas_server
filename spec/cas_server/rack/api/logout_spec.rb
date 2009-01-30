@@ -4,7 +4,7 @@ describe CasServer::Rack::Api::Logout do
   before do
     @env = Rack::MockRequest.env_for("http://example.com:8080/")
     @params = {'service' => 'http://toto.com/'}
-    @tgt = CasServer::Entity::TicketGrantingCookie.generate_for('username')
+    @tgt = CasServer::Entity::TicketGrantingCookie.generate_for(@authenticator_mock)
     @cookies = {'tgt' => @tgt.value}
     @rack = CasServer::Rack::Api::Logout.new
     @rack.stub!(:cookies).and_return(@cookies)

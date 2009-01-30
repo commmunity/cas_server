@@ -22,6 +22,7 @@ class InitialSchema < ActiveRecord::Migration
       t.string      :username, :null => false
       #t.string     :ipaddr, :null => false, :limit => 40
       t.datetime    :consumed_at, :null => true, :default => nil
+      t.text        :extra_attributes, :null => true, :default => nil
       t.timestamps
     end
   end

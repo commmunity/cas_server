@@ -121,6 +121,6 @@ describe CasServer::Rack::Api::CredentialRequestor do
   it "will not support trust identification specified in 2.1.4"
   
   def mock_sso_enabled!
- CasServer::Entity::TicketGrantingCookie.stub!(:from_cookie).and_return(CasServer::Entity::TicketGrantingCookie.generate_for(:username => 'username'))
+ CasServer::Entity::TicketGrantingCookie.stub!(:from_cookie).and_return(CasServer::Entity::TicketGrantingCookie.generate_for(@authenticator_mock))
   end
 end

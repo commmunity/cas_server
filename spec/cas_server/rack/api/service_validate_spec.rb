@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/../../../spec_helper'
 describe CasServer::Rack::Api::ServiceValidate do
   before do
     @service_url = 'http://toto.com'
-    @tgc= CasServer::Entity::TicketGrantingCookie.generate_for('username')
+    @tgc= CasServer::Entity::TicketGrantingCookie.generate_for(@authenticator_mock)
     @ts = CasServer::Entity::ServiceTicket.generate_for(@tgc,@service_url)
     @params = {'service' => @service_url, 'ticket' => @ts.value}
     @cookies = {}
@@ -30,13 +30,13 @@ describe CasServer::Rack::Api::ServiceValidate do
     #2.5.2
     it "MUST return xml with <cas:authenticationSuccess>" do
       response = @rack.call(@env)
-      response[2].body.should match(Regexp.new("<cas:authenticationSuccess>.*</cas:authenticationSuccess>",Regexp::MULTILINE))
+      response[2].body.first.should match(Regexp.new("<cas:authenticationSuccess>.*</cas:authenticationSuccess>",Regexp::MULTILINE))
     end
     
     #2.5.2
     it "MUST return the username in the xml" do
       response = @rack.call(@env)
-      response[2].body =~ %r{<cas:user>(.*)</cas:user>}
+      response[2].body.first =~ %r{<cas:user>(.*)</cas:user>}
       $1.should == 'username'
     end
     
@@ -45,7 +45,7 @@ describe CasServer::Rack::Api::ServiceValidate do
       @ts.should_receive(:extra_attributes).and_return({:firstname => 'toto'})
       CasServer::Entity::ServiceTicket.should_receive(:validate_ticket!).and_return(@ts)
       response = @rack.call(@env)
-      response[2].body.should match(%r{<firstname>toto</firstname>})
+      response[2].body.first.should match(%r{<firstname>toto</firstname>})
     end
   end
   
@@ -54,9 +54,9 @@ describe CasServer::Rack::Api::ServiceValidate do
     it "MUST return xml with <cas:authenticationFailure>, the error code and the error description" do
       @params.delete('service')
       response = @rack.call(@env)
-      response[2].body.should match(Regexp.new("<cas:authenticationFailure.*</cas:authenticationFailure>",Regexp::MULTILINE))
-      response[2].body.should match(/#{CasServer::MissingMandatoryParams.new(:service).error_identifier}/)
-      response[2].body.should match(/#{CasServer::MissingMandatoryParams.new(:service).message}/)
+      response[2].body.first.should match(Regexp.new("<cas:authenticationFailure.*</cas:authenticationFailure>",Regexp::MULTILINE))
+      response[2].body.first.should match(/#{CasServer::MissingMandatoryParams.new(:service).error_identifier}/)
+      response[2].body.first.should match(/#{CasServer::MissingMandatoryParams.new(:service).message}/)
     end
   end
   

@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(:version => 20081222173518) do
     t.datetime "consumed_at"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     :extra_attributes, :null => true, :default => nil
   end
 
 end

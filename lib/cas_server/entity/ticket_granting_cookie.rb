@@ -12,6 +12,7 @@ module CasServer
       include CasServer::Entity::TicketRandomization
       
       has_many :service_tickets, :class_name => "CasServer::Entity::ServiceTicket"
+      serialize :extra_attributes
       
       def ticket_prefix
         'TGC-'
@@ -25,8 +26,8 @@ module CasServer
       
       class << self
         # Extension to generate ticket granting ticket
-        def generate_for(username)
-          create!(:username => username)
+        def generate_for(authenticator)
+          create!(:username => authenticator.uuid, :extra_attributes => (authenticator.extra_attributes||{})) if authenticator
         end
         
         #TODO add some expiration AND/OR consumption mecanism

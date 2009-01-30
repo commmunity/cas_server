@@ -17,10 +17,18 @@ load_schema
 require 'spec'
 require 'rack/mock'
 
+Spec::Runner.configure do |config|  
+  config.before :all do
+    @authenticator_mock = CasServer::Extension::Authenticator::Mock.new('username','password')
+  end
+end
+
 #Debugger
 require File.expand_path(File.join(File.dirname(__FILE__), 'enable_debugger'))
 ENV['DEBUG'] = '1' #always enabled, require ruby-debug
 include EnableDebugger
+
+
 
 #bad bad but usefull ^^
 class Hash

@@ -51,7 +51,8 @@ describe CasServer::Rack::Api::CredentialAcceptor do
     before do
       @params[:service] = @service_url
       CasServer::Entity::LoginTicket.should_receive(:validate_ticket!)
-      CasServer::Extension::Authenticator.should_receive(:authenticate).and_return(true)
+      @authenticator_mock.should_receive(:authenticate?).and_return(true)
+      CasServer::Extension::Authenticator.should_receive(:build).and_return(@authenticator_mock)
     end
        
     # 2.2.4
@@ -75,7 +76,7 @@ describe CasServer::Rack::Api::CredentialAcceptor do
     
     # not specified in 2.2.4 ?
     it "MUST initiate a single sign-on session" do
-      tgt = CasServer::Entity::TicketGrantingCookie.generate_for('username')
+      tgt = CasServer::Entity::TicketGrantingCookie.generate_for(@authenticator_mock)
       tgt.should_receive(:to_cookie).and_return('tgt-toto')
       CasServer::Entity::TicketGrantingCookie.should_receive(:generate_for).and_return(tgt)
       @rack.should_receive(:set_cookie).with(:tgt, 'tgt-toto')
@@ -87,7 +88,8 @@ describe CasServer::Rack::Api::CredentialAcceptor do
     before do
       @params[:service] = @service_url
       CasServer::Entity::LoginTicket.should_receive(:validate_ticket!)
-      CasServer::Extension::Authenticator.should_receive(:authenticate).and_return(false)
+      @authenticator_mock.should_receive(:authenticate?).and_return(false)
+      CasServer::Extension::Authenticator.should_receive(:build).and_return(@authenticator_mock)
       @rack.call(@env)
     end
     
