@@ -89,7 +89,7 @@ module CasServer
           @service_manager = CasServer::Extension::ServiceManager.build(params['service'], self) 
           
           #Step 1: basic security, delegate access authorization to service manager
-          service_manager.validate!
+          service_manager.validate! if service_param_mandatory?
         
           #Step 2: specifics of the CAS action (check cookie, ...)
           process!
@@ -135,6 +135,11 @@ module CasServer
             @response['Content-Type'] = 'text/plain'
             @response.body = []
             return @response.finish
+          end
+        
+        private
+          def service_param_mandatory?
+            self.class.demanded_parameters.include?(:service)
           end
       end #Base
     end #Api

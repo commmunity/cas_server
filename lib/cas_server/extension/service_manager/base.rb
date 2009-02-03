@@ -19,24 +19,31 @@ module CasServer
           end
         end
         
-        attr_reader :service_url
+        attr_reader :service
         attr_reader :server
-      
-        def initialize(service_url, rack_server)
+        
+        def initialize(service, rack_server)
           @server = rack_server
-          @service_url = service_url.is_a?(URI) ? service_url : (URI.parse(service_url.to_s) rescue nil)
-          raise CasServer::InvalidServiceURL.new(service_url) unless self.service_url.is_a?(URI::HTTP)
+          @service = nil
+          if service.present?
+            @service = URI.parse(service.to_s) rescue nil 
+            raise CasServer::InvalidServiceURL.new(service) if !@service || !@service.is_a?(URI::HTTP)
+          end
         end
-      
+        
+        def service_url
+          @service
+        end
+        
         # This method has to be overridden
         def valid?
           raise NotImplementedError.new("#{self.class.name}#valid?")
         end
         
         def validate!
-          raise CasServer::InvalidServiceURL.new(service_url) unless valid?
+          raise CasServer::InvalidServiceURL.new(service) unless valid?
           true
-        end        
+        end  
       end #Base
     end #ServiceManager
   end #Extension

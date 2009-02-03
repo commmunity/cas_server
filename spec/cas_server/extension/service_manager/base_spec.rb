@@ -5,7 +5,7 @@ describe CasServer::Extension::ServiceManager::Base do
     @rack_server = nil
   end
   
-  it 'should raise a InvalidServiceURL if url is invalid' do
+  it 'raise a InvalidServiceURL if url is invalid' do
     lambda {
       CasServer::Extension::ServiceManager::Base.new('http://', @rack_server)
     }.should raise_error(CasServer::InvalidServiceURL)
@@ -13,15 +13,24 @@ describe CasServer::Extension::ServiceManager::Base do
     lambda {
       CasServer::Extension::ServiceManager::Base.new('ftp://www.google.fr', @rack_server)
     }.should raise_error(CasServer::InvalidServiceURL)
-    
+  end
+  
+  it 'accepts valid URL' do
     lambda {
       CasServer::Extension::ServiceManager::Base.new('http://www.google.com', @rack_server)
     }.should_not raise_error
   end
   
-  it 'accepts https URLs' do
+  it 'accepts valid https URLs' do
     lambda {
       CasServer::Extension::ServiceManager::Base.new('https://www.google.com', @rack_server)
+    }.should_not raise_error
+  end
+  
+  it 'accepts empty service' do
+    lambda {
+      CasServer::Extension::ServiceManager::Base.new('', @rack_server)
+      CasServer::Extension::ServiceManager::Base.new(nil, @rack_server)
     }.should_not raise_error
   end
   

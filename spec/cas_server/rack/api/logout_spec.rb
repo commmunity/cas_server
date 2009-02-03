@@ -3,12 +3,21 @@ require File.dirname(__FILE__) + '/../../../spec_helper'
 describe CasServer::Rack::Api::Logout do
   before do
     @env = Rack::MockRequest.env_for("http://example.com:8080/")
-    @params = {'service' => 'http://toto.com/'}
+    @params = {}
     @tgt = CasServer::Entity::TicketGrantingCookie.generate_for(@authenticator_mock)
     @cookies = {'tgt' => @tgt.value}
     @rack = CasServer::Rack::Api::Logout.new
     @rack.stub!(:cookies).and_return(@cookies)
     @rack.stub!(:params).and_return(@params)
+  end
+  
+  describe "Not in Cas protocol" do
+    it "Should not validate the ServiceManager as service is not expected" do
+      @sm = mock('service_manager')
+      CasServer::Extension::ServiceManager.stub!(:build).and_return(@sm)
+      @sm.should_not_receive(:validate!)
+      @rack.call(@env)
+    end
   end
   
   #2.3
