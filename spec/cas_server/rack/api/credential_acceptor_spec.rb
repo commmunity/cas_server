@@ -52,7 +52,7 @@ describe CasServer::Rack::Api::CredentialAcceptor do
       @params[:service] = @service_url
       CasServer::Entity::LoginTicket.should_receive(:validate_ticket!)
       @authenticator_mock.should_receive(:authenticate?).and_return(true)
-      CasServer::Extension::Authenticator.should_receive(:build).and_return(@authenticator_mock)
+      @rack.stub!(:current_authenticator).and_return @authenticator_mock
     end
        
     # 2.2.4
@@ -89,7 +89,7 @@ describe CasServer::Rack::Api::CredentialAcceptor do
       @params[:service] = @service_url
       CasServer::Entity::LoginTicket.should_receive(:validate_ticket!)
       @authenticator_mock.should_receive(:authenticate?).and_return(false)
-      CasServer::Extension::Authenticator.should_receive(:build).and_return(@authenticator_mock)
+      @rack.stub!(:current_authenticator).and_return(@authenticator_mock)
       @rack.call(@env)
     end
     

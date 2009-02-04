@@ -11,6 +11,33 @@ describe CasServer::Rack::Api::CredentialRequestor do
     @rack.stub!(:params).and_return(@params)
   end
 
+  describe "not in cas specification" do
+    describe "when authenticator has a callback" do
+      before do
+        @authenticator_mock.stub!(:has_callback?).with(:before_credential_requestor).and_return(true)        
+        @rack.stub!(:current_authenticator).and_return @authenticator_mock      
+      end
+      
+      it "should use the response of the before_credential_acceptor callback it there is one" do
+        @response = []
+        @authenticator_mock.should_receive(:before_credential_requestor).and_return @response
+        @rack.call(@env).should === @response
+      end
+      
+      it "should not be called when sso is enabled" do
+        mock_sso_enabled!
+        @authenticator_mock.should_not_receive(:before_credential_requestor)
+        @rack.call(@env)
+      end
+      
+      it "should not be called when gateway mode" do
+        @params['gateway'] = '1'
+        @authenticator_mock.should_not_receive(:before_credential_requestor)
+        @rack.call(@env)
+      end
+    end
+  end
+
   it "should accept any given params" do
     @params['unknown'] = 'Unknown param'
     lambda {

@@ -25,7 +25,6 @@ describe CasServer::Rack::Api::ServiceValidate do
   #2.5
   it "is recommanded that the error explain that validation failed when a proxy ticket was passed"
   
-  
   describe "on successful serviceValidate" do
     #2.5.2
     it "MUST return xml with <cas:authenticationSuccess>" do

@@ -18,8 +18,10 @@ require 'spec'
 require 'rack/mock'
 
 Spec::Runner.configure do |config|  
-  config.before :all do
-    @authenticator_mock = CasServer::Extension::Authenticator::Mock.new('username','password')
+  config.before :each do
+    @authenticator_mock = CasServer::Extension::Authenticator::Mock.new(nil)
+    @authenticator_mock.stub!(:username).and_return('username')
+    @authenticator_mock.stub!(:password).and_return('password')
   end
 end
 

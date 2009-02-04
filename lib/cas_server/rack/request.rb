@@ -5,7 +5,7 @@ module CasServer
       # Return true if method, path, and required_params match.
       def match?(method, path, required_params=[])
         (method == '*' || request_method == method) &&
-          path_info.match(path) &&# just enough to work for now
+          path_info.match(path) &&
           param_match?(required_params)
       end
 

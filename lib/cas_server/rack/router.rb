@@ -27,6 +27,8 @@ module CasServer
         request = Request.new(env)
         
         case request
+        when r(:get, '/cas/login', ['type' => 'acceptor'])
+          run Api::CredentialAcceptor
         when r(:get, '/cas/login')
           run Api::CredentialRequestor
         when r(:post, '/cas/login')

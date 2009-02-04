@@ -26,12 +26,12 @@ module CasServer
           
           debug 'Try to authenticate with authenticator'
           #LoginTicket valid, check authentication
-          @authenticator = CasServer::Extension::Authenticator.build(username, password)
-          @authenticator.authenticate!
           
-          debug "Authentication successful Generate SSO ticket granting cookie for uuid:#{@authenticator.uuid} with extra_attributes: #{@authenticator.extra_attributes.inspect}"
+          current_authenticator.authenticate!
+          
+          debug "Authentication successful Generate SSO ticket granting cookie for uuid:#{current_authenticator.uuid} with extra_attributes: #{current_authenticator.extra_attributes.inspect}"
           #Authentication successful, create ticket granting ticket cookie and set it
-          ticket_granting_ticket = CasServer::Entity::TicketGrantingCookie.generate_for(@authenticator)
+          ticket_granting_ticket = CasServer::Entity::TicketGrantingCookie.generate_for(current_authenticator)
           set_cookie :tgt, ticket_granting_ticket.to_cookie
 
           if service_url

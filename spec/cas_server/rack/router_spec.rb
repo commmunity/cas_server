@@ -17,6 +17,11 @@ describe CasServer::Rack::Router do
     post '/cas/login'
   end
   
+  it "MUST Launch CredentialAcceptor on GET /cas/login if type=acceptor" do
+    @router.should_receive(:run).with(CasServer::Rack::Api::CredentialAcceptor).and_return(@mock_response)
+    get '/cas/login?type=acceptor'
+  end
+  
   it "MUST launch ServiceValidate on GET/POST /cas/serviceValidate" do
     @router.should_receive(:run).with(CasServer::Rack::Api::ServiceValidate).twice.and_return(@mock_response)
     get '/cas/serviceValidate'

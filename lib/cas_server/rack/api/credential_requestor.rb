@@ -31,8 +31,9 @@ module CasServer
             raise CasServer::InvalidRequest if !service_url
             return(redirect_to service_url)
           else
-            # display credential requestor
-            return
+            # before_credential_requestor callback
+            return handle_callback_response(current_authenticator, :before_credential_requestor) if current_authenticator.has_callback?(:before_credential_requestor)
+            #return default 404 response to pass rendering to upstream server
           end
         end
       end #CredentialRequestor

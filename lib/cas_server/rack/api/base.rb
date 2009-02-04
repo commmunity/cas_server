@@ -25,7 +25,7 @@ module CasServer
         attr_reader :response
         attr_reader :service_manager
       
-        delegate :params, :cookies, :to => :request
+        delegate :params, :cookies, :url, :scheme, :port, :host, :to => :request
         delegate :set_cookie, :delete_cookie, :redirect?, :to => :response
       
         #array of errors store in env hash (so that they will be accessible to higher level, rails...)
@@ -95,7 +95,7 @@ module CasServer
           process!
         
           #handle the response or delegate to higher level for rendering
-          return @response.finish
+          return handle_response
         rescue CasServer::Error => error
           debug "Exception #{error.message} has been caught during #{self.class.name} execution"
           errors << error
@@ -112,6 +112,18 @@ module CasServer
           @response.status = 302
           @response['Content-Type'] = 'text/plain'
           @response['Location'] = uri
+          @response
+        end
+        
+        # return http(s)://current_domain:current_port
+        def base_url
+          url = "#{scheme}://#{host}"
+
+          if scheme == "https" && port != 443 ||
+              scheme == "http" && port != 80
+            url << ":#{port}"
+          end
+          url
         end
         
         def delegate_render?
@@ -123,6 +135,22 @@ module CasServer
         end
       
         protected
+          def current_authenticator
+            @current_authenticator ||= ((params['auth'].present?) ?
+              CasServer::Extension::Authenticator.find(params['auth']) :
+              CasServer::Extension::Authenticator.default).new(self)
+          end
+          
+          def handle_response
+            @response.is_a?(Array) ? @response : @response.finish
+          end
+          
+          #treat return of authenticator callback
+          def handle_callback_response(authenticator, callback)
+            @response = authenticator.send callback
+            debug "Callback received and return #{@response.inspect}"
+          end
+        
           def validate_parameters!
             self.class.demanded_parameters.each do |param| 
               raise MissingMandatoryParams.new(param) unless self.params.has_key?(param.to_s)
