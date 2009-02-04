@@ -13,11 +13,17 @@ module CasServer
           params['url'].present?
         end
         
+        def destination?
+          params['destination'].present? && (URI.parse(params['destination']).is_a?(URI::HTTP) rescue nil)
+        end
+        
         def process!
           ticket_granting_ticket.destroy if sso_enabled?
           #TODO single sign out
           delete_cookie 'tgt'
-          if url?
+          if destination?
+            return(redirect_to params['destination'])
+          elsif url?
             warnings << 'cas_server.warning.logout_with_url'
           else
             warnings << 'cas_server.warning.logout'

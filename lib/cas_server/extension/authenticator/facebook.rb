@@ -1,14 +1,10 @@
-require 'facebooker'
 module CasServer
   module Extension
     module Authenticator
       class Facebook < CasServer::Extension::Authenticator::Base
-        
-        $FB_API_KEY = '4d1f1803d26b831c28af69f32d8cad96'
-        $FB_PASSWORD = '0f3c400211a7def2f58a1b5357d43de9'
-        
+
         def fb_session
-          @fb_session ||= Facebooker::Session.create($FB_API_KEY, $FB_PASSWORD)
+          @fb_session ||= Facebooker::Session.create
         end
         
         def authenticate?
@@ -39,7 +35,7 @@ module CasServer
         end
         
         def avatar_url
-          @fb_session.user.pic_big
+          @fb_session.user.pic_square
         end
         
         def extra_attributes

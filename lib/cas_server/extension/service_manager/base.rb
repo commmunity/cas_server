@@ -1,5 +1,3 @@
-require 'uri'
-
 module CasServer
   module Extension
     module ServiceManager

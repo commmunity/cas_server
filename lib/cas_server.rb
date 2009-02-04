@@ -1,3 +1,4 @@
+require 'uri'
 begin
   require 'rack'
 rescue LoadError

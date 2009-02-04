@@ -18,6 +18,20 @@ describe CasServer::Rack::Api::Logout do
       @sm.should_not_receive(:validate!)
       @rack.call(@env)
     end
+    
+    describe "When destination params is provided" do
+      it "should redirect to destination if it is a proper url" do
+        @params['destination'] = 'http://example.com'
+        @rack.call(@env)
+        @rack.should be_redirect
+        @rack.response['Location'].should match(/example.com/)
+      end
+      
+      it "should not do anything if destination is not a proper url" do
+        @params['destination'] = "javascript:alert('toto')"
+        @rack.should be_delegate_render
+      end
+    end
   end
   
   #2.3
