@@ -67,3 +67,11 @@ end
 
 require File.join(CasServer::CAS_SERVER_PATH, "error")
 require File.join(CasServer::CAS_SERVER_PATH, "logger")
+
+Dir.glob(File.join(CasServer::CAS_SERVER_PATH,'extension/authenticator', '*')).each do |f|
+  require f
+end
+
+Dir.glob(File.join(CasServer::CAS_SERVER_PATH,'extension/service_manager', '*')).each do |f|
+  require f
+end

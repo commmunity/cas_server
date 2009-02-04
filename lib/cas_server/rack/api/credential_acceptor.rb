@@ -5,7 +5,7 @@ module CasServer
   module Rack
     module Api
       class CredentialAcceptor < Base
-        demand :username, :password, :lt
+        #demand :username, :password, :lt
         accept :service, :warn
         
         def lt
@@ -22,9 +22,9 @@ module CasServer
         
         def process!
           #validate against LoginTicket
-          CasServer::Entity::LoginTicket.validate_ticket!(lt)
+          #CasServer::Entity::LoginTicket.validate_ticket!(lt)
           
-          debug 'Try to authenticate with authenticator'
+          debug "Try to authenticate with authenticator #{current_authenticator.class.model}"
           #LoginTicket valid, check authentication
           
           current_authenticator.authenticate!
@@ -33,8 +33,7 @@ module CasServer
           #Authentication successful, create ticket granting ticket cookie and set it
           ticket_granting_ticket = CasServer::Entity::TicketGrantingCookie.generate_for(current_authenticator)
           set_cookie :tgt, ticket_granting_ticket.to_cookie
-
-          if service_url
+          if service_url?
             #create service ticket
             service_ticket = CasServer::Entity::ServiceTicket.generate_for(ticket_granting_ticket, service_url)
             return(redirect_to service_ticket.service_url_with_service_ticket)  

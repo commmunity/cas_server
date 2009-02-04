@@ -35,6 +35,7 @@ module CasServer
   module Extension
     module Authenticator
       class Base
+        include ::CasServer::Loggable
         class << self
           # available authenticator implementation
           def implementations

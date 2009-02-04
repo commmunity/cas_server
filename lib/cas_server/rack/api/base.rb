@@ -54,6 +54,10 @@ module CasServer
           params['service']
         end
         
+        def service_url?
+          params['service'].present?
+        end
+        
         def ticket_granting_cookie
           cookies['tgt']
         end

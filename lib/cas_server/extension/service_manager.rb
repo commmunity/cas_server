@@ -1,7 +1,3 @@
-Dir.glob(File.join(File.dirname(__FILE__),'service_manager', '*')).each do |f|
-  require f
-end
-
 module CasServer
   module Extension
     module ServiceManager

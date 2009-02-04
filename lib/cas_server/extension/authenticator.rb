@@ -1,11 +1,8 @@
-Dir.glob(File.join(File.dirname(__FILE__),'authenticator', '*')).each do |f|
-  require f
-end
-
 module CasServer
   module Extension
     module Authenticator
       def self.find(authenticator_model)
+        authenticator_model = authenticator_model.to_sym
         authenticator_implementation = Base.implementations.detect {|k| k.model == authenticator_model}
         raise InvalidAuthenticator.new(CasServer::Configuration.authenticator) unless authenticator_implementation
         authenticator_implementation

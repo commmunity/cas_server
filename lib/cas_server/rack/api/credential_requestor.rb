@@ -18,7 +18,7 @@ module CasServer
 
         def process!
           if sso_enabled? && !renew?
-            if service_url
+            if service_url?
               #generate service ticket and redirect
               service_ticket = CasServer::Entity::ServiceTicket.generate_for(ticket_granting_ticket, service_url)
               return(redirect_to service_ticket.service_url_with_service_ticket)
