@@ -20,10 +20,7 @@ module CasServer
           params['password']
         end
         
-        def process!
-          #validate against LoginTicket
-          #CasServer::Entity::LoginTicket.validate_ticket!(lt)
-          
+        def process!          
           debug "Try to authenticate with authenticator #{current_authenticator.class.model}"
           #LoginTicket valid, check authentication
           

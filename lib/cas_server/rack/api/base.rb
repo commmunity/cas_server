@@ -4,22 +4,7 @@ module CasServer
     module Api
       class Base
         include CasServer::Loggable
-        class_inheritable_reader :accepted_parameters
-        write_inheritable_attribute :accepted_parameters, []
-        class_inheritable_reader :demanded_parameters
-        write_inheritable_attribute :demanded_parameters, []
-        
-        class << self
-          # Specify accepted params for this REST Web Service
-          def accept(*parameters)
-            write_inheritable_attribute(:accepted_parameters, parameters) if parameters.present?
-          end
-
-          # Mandatory params for this REST Web Service
-          def demand(*parameters)
-            write_inheritable_attribute(:demanded_parameters, parameters) if parameters.present?
-          end
-        end      
+        include CasServer::Utils::MandatoryParameters    
       
         attr_reader :request
         attr_reader :response
@@ -153,12 +138,6 @@ module CasServer
           def handle_callback_response(authenticator, callback)
             @response = authenticator.send callback
             debug "Callback received and return #{@response.inspect}"
-          end
-        
-          def validate_parameters!
-            self.class.demanded_parameters.each do |param| 
-              raise MissingMandatoryParams.new(param) unless self.params.has_key?(param.to_s)
-            end
           end
           
           def default_exception_handler(exception)

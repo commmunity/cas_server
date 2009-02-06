@@ -35,7 +35,9 @@ module CasServer
   module Extension
     module Authenticator
       class Base
-        include ::CasServer::Loggable
+        include CasServer::Loggable
+        include CasServer::Utils::MandatoryParameters
+        
         class << self
           # available authenticator implementation
           def implementations
@@ -59,6 +61,7 @@ module CasServer
         end
         
         def authenticate!
+          validate_parameters!
           authenticate? || raise(AuthenticationFailed)
         end
         

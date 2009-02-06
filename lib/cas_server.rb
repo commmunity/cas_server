@@ -23,6 +23,10 @@ end unless defined?(ActiveRecord)
 module CasServer
   CAS_SERVER_PATH = File.expand_path(File.join(File.dirname(__FILE__), "cas_server"))
   
+  module Utils
+    autoload :MandatoryParameters,  "#{CAS_SERVER_PATH}/utils/mandatory_parameters"
+  end
+  
   module Rack
     autoload :Request,              "#{CAS_SERVER_PATH}/rack/request"
     autoload :Response,             "#{CAS_SERVER_PATH}/rack/response"

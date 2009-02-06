@@ -29,6 +29,7 @@ describe CasServer::Rack::Api::Logout do
       
       it "should not do anything if destination is not a proper url" do
         @params['destination'] = "javascript:alert('toto')"
+        @rack.call(@env)
         @rack.should be_delegate_render
       end
     end

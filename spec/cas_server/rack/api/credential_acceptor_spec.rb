@@ -9,6 +9,7 @@ describe CasServer::Rack::Api::CredentialAcceptor do
     @rack = CasServer::Rack::Api::CredentialAcceptor.new
     @rack.stub!(:cookies).and_return(@cookies)
     @rack.stub!(:params).and_return(@params)
+    CasServer::Extension::Authenticator.stub!(:default).and_return(CasServer::Extension::Authenticator::Cas)
   end
   
   describe "while acting as a credential acceptor for username/password authentication" do
@@ -49,10 +50,7 @@ describe CasServer::Rack::Api::CredentialAcceptor do
   
   describe "in case of successful login" do
     before do
-      @params[:service] = @service_url
       CasServer::Entity::LoginTicket.should_receive(:validate_ticket!)
-      @authenticator_mock.should_receive(:authenticate?).and_return(true)
-      @rack.stub!(:current_authenticator).and_return @authenticator_mock
     end
        
     # 2.2.4
@@ -76,20 +74,17 @@ describe CasServer::Rack::Api::CredentialAcceptor do
     
     # not specified in 2.2.4 ?
     it "MUST initiate a single sign-on session" do
-      tgt = CasServer::Entity::TicketGrantingCookie.generate_for(@authenticator_mock)
-      tgt.should_receive(:to_cookie).and_return('tgt-toto')
-      CasServer::Entity::TicketGrantingCookie.should_receive(:generate_for).and_return(tgt)
-      @rack.should_receive(:set_cookie).with(:tgt, 'tgt-toto')
-      @rack.call(@env)
+      lambda {
+        @rack.should_receive(:set_cookie)
+        @rack.call(@env)
+      }.should change(CasServer::Entity::TicketGrantingCookie, :count)
     end
   end
   
   describe "in case of failed login" do
     before do
-      @params[:service] = @service_url
+      @params['password'] = 'wrong'
       CasServer::Entity::LoginTicket.should_receive(:validate_ticket!)
-      @authenticator_mock.should_receive(:authenticate?).and_return(false)
-      @rack.stub!(:current_authenticator).and_return(@authenticator_mock)
       @rack.call(@env)
     end
     
