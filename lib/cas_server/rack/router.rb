@@ -20,6 +20,7 @@ module CasServer
       
       
       def call(env)
+        debug "Entering CasRouter with path_info #{env['PATH_INFO']}"
         return NOT_FOUND unless env['PATH_INFO'] =~ CAS_NAMESPACE
         @env = env
         
