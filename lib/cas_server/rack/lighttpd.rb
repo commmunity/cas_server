@@ -2,13 +2,17 @@
 module CasServer
   module Rack
     class Lighttpd
+      LIGHTY = /^lighttpd/
+      
       def initialize(app)
         @app= app
       end
       
       def call(env)
-        env['PATH_INFO'] = env['REQUEST_URI']
-        env['SCRIPT_NAME'] = ''
+        if env['SERVER_SOFTWARE'] =~ LIGHTY
+          env['PATH_INFO'] ||= env['REQUEST_URI']
+          env['SCRIPT_NAME'] = ''
+        end
         @app.call(env)
       end
     end #Lighty
