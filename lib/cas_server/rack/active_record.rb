@@ -1,3 +1,4 @@
+#cleanup connection pool under multithreading
 module CasServer
   module Rack
     class ActiveRecord
