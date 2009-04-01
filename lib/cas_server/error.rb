@@ -68,7 +68,7 @@ module CasServer
     
     def initialize(url, msg = nil)
       @url = url
-      super(msg || "cas_server.error.invalid_service_url.#{i18n_identifier}")
+      super(msg || "cas_server.error.service_url.#{i18n_identifier}")
     end
   end
   
