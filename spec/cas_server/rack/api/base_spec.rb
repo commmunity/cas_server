@@ -43,4 +43,44 @@ describe CasServer::Rack::Api::Base do
     @instance.should_receive(:validate_parameters!).and_raise(CasServer::Error)
     @instance.call(@mock_env)
   end
+  
+  describe 'service manager' do
+    
+    before :each do
+      @service_manager = mock(:service_manager)
+      @instance.stub!(:service_manager).and_return(@service_manager)
+    end
+    
+    it 'is assigned in request env' do
+      @service_manager.should_receive(:validate!)
+      @instance.should_receive(:process!)
+      @instance.call(@mock_env)
+      @mock_env['cas_server.service_manager'].should be_a(CasServer::Extension::ServiceManager::Base)
+    end
+    
+    it 'is validated if service param is mandatory' do
+      @instance.should_receive(:service_param_mandatory?).and_return(true)
+      @instance.should_receive(:process!)
+
+      @service_manager.should_receive(:validate!)
+      @instance.call(@mock_env)
+    end
+
+    it 'is validated if service url is present' do
+      @instance.should_receive(:service_url?).and_return(true)
+      @instance.should_receive(:process!)
+
+      @service_manager.should_receive(:validate!)
+      @instance.call(@mock_env)
+    end
+
+    it "is not validated if service url is not present and mandatory" do
+      @instance.should_receive(:service_url?).and_return(false)
+      @instance.should_receive(:process!)
+
+      @service_manager.should_not_receive(:validate!)
+      @instance.call(@mock_env)
+    end
+    
+  end
 end

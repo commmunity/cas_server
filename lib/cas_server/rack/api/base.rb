@@ -8,7 +8,6 @@ module CasServer
       
         attr_reader :request
         attr_reader :response
-        attr_reader :service_manager
       
         delegate :params, :cookies, :url, :scheme, :port, :host, :to => :request
         delegate :set_cookie, :delete_cookie, :redirect?, :to => :response
@@ -75,10 +74,10 @@ module CasServer
           validate_parameters!
           
           #Parse the service with configured service manager
-          @service_manager = CasServer::Extension::ServiceManager.build(params['service'], self) 
+          @request.env['cas_server.service_manager'] = CasServer::Extension::ServiceManager.build(service_url, self)
           
           #Step 1: basic security, delegate access authorization to service manager
-          service_manager.validate! if service_param_mandatory?
+          service_manager.validate! if service_param_mandatory? || service_url?
         
           #Step 2: specifics of the CAS action (check cookie, ...)
           process!
@@ -121,6 +120,10 @@ module CasServer
         
         def process!
           raise NotImplementedError
+        end
+        
+        def service_manager
+          @request.env['cas_server.service_manager']
         end
       
         protected

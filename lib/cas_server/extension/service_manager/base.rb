@@ -20,6 +20,8 @@ module CasServer
         attr_reader :service
         attr_reader :server
         
+        delegate :current_authenticator, :to => :server
+        
         def initialize(service, rack_server)
           @server = rack_server
           @service = nil
