@@ -36,7 +36,7 @@ module CasServer
         end
         
         def check_authorization!(username)
-          raise CasServer::AuthorizationRequired.new(service) unless authorized?(username)
+          raise CasServer::AuthorizationRequired.new unless authorized?(username)
           true
         end
         
