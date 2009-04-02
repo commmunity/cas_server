@@ -14,12 +14,13 @@ module CasServer
       include CasServer::Entity::Expirable
       include CasServer::Entity::TicketRandomization
       
-      def ticket_prefix
-        'ST-'
+      def extra_attributes(service_manager)
+        attributes = ticket_granting_cookie.extra_attributes || {}
+        attributes.merge(service_manager.extra_attributes_for(ticket_granting_cookie.username))
       end
       
-      def extra_attributes
-        ticket_granting_cookie.extra_attributes || {}
+      def ticket_prefix
+        'ST-'
       end
       
       def service_url_with_service_ticket
@@ -48,10 +49,10 @@ module CasServer
           ticket_granting_cookie.service_tickets.create!(:username => ticket_granting_cookie.username, :service => service_manager.service_url.to_s)
         end
         
-        def validate_ticket!(value, service)
+        def validate_ticket!(value, service_manager)
           ticket = value && find_by_value(value)
           raise CasServer::InvalidTicket.new(self.new) if ticket.nil?
-          if ticket.service != service
+          if ticket.service.to_s != service_manager.service_url.to_s
             ticket.destroy
             raise CasServer::InvalidService.new(ticket)
           end 

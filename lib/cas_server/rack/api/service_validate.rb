@@ -16,8 +16,8 @@ module CasServer
         end
     
         def process!
-          @service_ticket = CasServer::Entity::ServiceTicket.validate_ticket!(ticket, service_url)
-          @extra_attributes = @service_ticket.extra_attributes
+          @service_ticket = CasServer::Entity::ServiceTicket.validate_ticket!(ticket, service_manager)
+          @extra_attributes = @service_ticket.extra_attributes(service_manager)
           render_xml <<SUCCESS_RESPONSE
 <?xml version="1.0" encoding="UTF-8"?>
 <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">

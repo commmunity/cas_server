@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/../../../spec_helper'
 describe CasServer::Rack::Api::ServiceValidate do
   before do
     @service_url = 'http://toto.com'
-    @service_manager = mock(:service_manager, :check_authorization! => true, :service_url => @service_url, :validate_service! => true)
+    @service_manager = mock(:service_manager, :check_authorization! => true, :service_url => @service_url, :validate_service! => true, :extra_attributes_for => {})
     @tgc= CasServer::Entity::TicketGrantingCookie.generate_for(@authenticator_mock)
     @ts = CasServer::Entity::ServiceTicket.generate_for(@tgc,@service_manager)
     @params = {'service' => @service_url, 'ticket' => @ts.value}
@@ -17,7 +17,7 @@ describe CasServer::Rack::Api::ServiceValidate do
   
   #2.5
   it "checks the validity of a service ticket and returns an XML-fragment response" do
-    CasServer::Entity::ServiceTicket.should_receive(:validate_ticket!).with(@ts.value,@service_url).and_return(@ts)
+    CasServer::Entity::ServiceTicket.should_receive(:validate_ticket!).with(@ts.value, @service_manager).and_return(@ts)
     @rack.call(@env)
   end
   
@@ -95,7 +95,7 @@ describe CasServer::Rack::Api::ServiceValidate do
   
   #2.5.3
   it "may use INVALID_SERVICE 'code' when the ticket provided was valid, but the service specified was not" do
-    @params['service'] = 'http://tata.com'
+    @service_manager.stub!(:service_url).and_return('http://tata.com')
     @rack.call(@env)
     @rack.should be_error
     @rack.errors.first.error_identifier.should == 'INVALID_SERVICE'
@@ -103,11 +103,11 @@ describe CasServer::Rack::Api::ServiceValidate do
   
   #2.5.3
   it "MUST invalidate the ticket and disallow future validation of that same ticket in case of INVALID_SERVICE" do
-    @params['service'] = 'http://tata.com'
+    @service_manager.stub!(:service_url).and_return('http://tata.com')
     @rack.call(@env)
     @rack.should be_error
     lambda {
-      @ts.class.validate_ticket!(@ts.value,@ts.service)
+      @ts.class.validate_ticket!(@ts.value, @service_manager)
     }.should raise_error(CasServer::InvalidTicket)
   end
 end

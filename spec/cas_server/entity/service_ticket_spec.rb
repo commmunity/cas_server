@@ -17,9 +17,18 @@ describe CasServer::Entity::ServiceTicket do
     end
     
     it "may access extra_attributes available in ticket_granting_ticket" do
+      @service_manager.should_receive(:extra_attributes_for).and_return({})
       @ticket_granting_ticket.reload
       st = @ticket_granting_ticket.service_tickets.create!(:username => 'username', :service => 'http://service.com')
-      st.extra_attributes.should == @authenticator_mock.extra_attributes
+      st.extra_attributes(@service_manager).should == @authenticator_mock.extra_attributes
+    end
+    
+    it 'merges service manager extra attributes' do
+      @service_manager.should_receive(:extra_attributes_for).twice.and_return({:bar, 'foo'})
+      @ticket_granting_ticket.reload
+      st = @ticket_granting_ticket.service_tickets.create!(:username => 'username', :service => 'http://service.com')
+      st.extra_attributes(@service_manager).should include(@authenticator_mock.extra_attributes)
+      st.extra_attributes(@service_manager).should include(:bar => 'foo')
     end
     
     it 'should failed if no ticket granting cookie is related' do
@@ -36,8 +45,9 @@ describe CasServer::Entity::ServiceTicket do
   
   #3.1.1
   it "MUST only be valid for a given service" do
+    @service_manager.should_receive(:service_url).and_return('http://service.com2')
     lambda do
-      CasServer::Entity::ServiceTicket.validate_ticket!(@ticket.value,'http://service.com2')
+      CasServer::Entity::ServiceTicket.validate_ticket!(@ticket.value, @service_manager)
     end.should raise_error(CasServer::InvalidService)
   end
   
@@ -48,9 +58,10 @@ describe CasServer::Entity::ServiceTicket do
   
   #3.1.1
   it "MUST only be valid for one ticket validation attempt" do
-    CasServer::Entity::ServiceTicket.validate_ticket!(@ticket.value,@ticket.service)
+    @service_manager.should_receive(:service_url).twice.and_return(@ticket.service)
+    CasServer::Entity::ServiceTicket.validate_ticket!(@ticket.value, @service_manager)
     lambda do
-      CasServer::Entity::ServiceTicket.validate_ticket!(@ticket.value,@ticket.service)
+      CasServer::Entity::ServiceTicket.validate_ticket!(@ticket.value, @service_manager)
     end.should raise_error(CasServer::ConsumedTicket)
   end
   
@@ -69,7 +80,7 @@ describe CasServer::Entity::ServiceTicket do
     it "MUST respond with a validation failure response" do
       @ticket.update_attribute :created_at, 20.minutes.ago
       lambda do
-        CasServer::Entity::ServiceTicket.validate_ticket!(@ticket.value,@ticket.service)
+        CasServer::Entity::ServiceTicket.validate_ticket!(@ticket.value, @service_manager)
       end.should raise_error(CasServer::ExpiredTicket)
     end
   
