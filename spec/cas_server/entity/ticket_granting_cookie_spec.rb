@@ -4,6 +4,7 @@ require File.expand_path(File.dirname(__FILE__) + '/shared_ticket_spec')
 describe CasServer::Entity::TicketGrantingCookie do
   before do
     @valid_args = [@authenticator_mock]
+    @service_manager = mock(:service_manager, :check_authorization! => true, :service_url => 'http://service.com')
     @ticket = CasServer::Entity::TicketGrantingCookie.generate_for(*@valid_args)
   end
   
@@ -11,7 +12,7 @@ describe CasServer::Entity::TicketGrantingCookie do
   
   describe 'Not in the specification' do
     it 'MUST maintain a list of Service Ticket this session has emited' do
-      service_ticket = CasServer::Entity::ServiceTicket.generate_for(@ticket, 'SERVICE')
+      service_ticket = CasServer::Entity::ServiceTicket.generate_for(@ticket, @service_manager)
       @ticket.reload
       @ticket.service_tickets.first.should == service_ticket
     end

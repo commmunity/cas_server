@@ -53,6 +53,10 @@ module CasServer
   class AuthenticationFailed < Error
   end
   
+  # Authorization required in service manager
+  class AuthorizationRequired < Error
+  end
+  
   # No ticket with that value found
   class InvalidTicket < Error
     attr_reader :ticket

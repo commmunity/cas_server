@@ -76,8 +76,8 @@ module CasServer
           #Parse the service with configured service manager
           @request.env['cas_server.service_manager'] = CasServer::Extension::ServiceManager.build(service_url, self)
           
-          #Step 1: basic security, delegate access authorization to service manager
-          service_manager.validate! if service_param_mandatory? || service_url?
+          #Step 1: basic security, delegate service authorization to service manager
+          service_manager.validate_service! if service_param_mandatory? || service_url?
         
           #Step 2: specifics of the CAS action (check cookie, ...)
           process!

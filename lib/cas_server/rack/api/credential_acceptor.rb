@@ -32,7 +32,7 @@ module CasServer
           set_cookie :tgt, ticket_granting_ticket.to_cookie
           if service_url?
             #create service ticket
-            service_ticket = CasServer::Entity::ServiceTicket.generate_for(ticket_granting_ticket, service_url)
+            service_ticket = CasServer::Entity::ServiceTicket.generate_for(ticket_granting_ticket, service_manager)
             return(redirect_to service_ticket.service_url_with_service_ticket)  
           else
             warnings << 'cas_server.warning.no_service_uri'

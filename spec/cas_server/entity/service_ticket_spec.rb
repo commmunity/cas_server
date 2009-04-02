@@ -4,7 +4,8 @@ require File.expand_path(File.dirname(__FILE__) + '/shared_ticket_spec')
 describe CasServer::Entity::ServiceTicket do
   before do
     @ticket_granting_ticket = CasServer::Entity::TicketGrantingCookie.generate_for(@authenticator_mock)
-    @valid_args = [@ticket_granting_ticket, 'http://service.com']
+    @service_manager = mock(:service_manager, :check_authorization! => true, :service_url => 'http://service.com')
+    @valid_args = [@ticket_granting_ticket, @service_manager]
     @ticket = CasServer::Entity::ServiceTicket.generate_for(*@valid_args)
   end
   
@@ -25,6 +26,11 @@ describe CasServer::Entity::ServiceTicket do
       lambda do
         CasServer::Entity::ServiceTicket.create!(:username => 'username', :service => 'http://service.com')
       end.should raise_error(ActiveRecord::RecordInvalid)
+    end
+    
+    it 'check authorization on service manager with ticket granting ticket username' do
+      @service_manager.should_receive(:check_authorization!).with(@ticket_granting_ticket.username)
+      CasServer::Entity::ServiceTicket.generate_for(*@valid_args)
     end
   end
   
@@ -49,8 +55,7 @@ describe CasServer::Entity::ServiceTicket do
   end
   
   #3.1.1
-  it "SHOULD expire unvalidated service tickets in a reasonable period of time after 
-  they are issued" do
+  it "SHOULD expire unvalidated service tickets in a reasonable period of time after they are issued" do
     CasServer::Configuration.ticket_expiration.should > 10.seconds
   end
   

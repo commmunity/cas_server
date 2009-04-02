@@ -43,8 +43,9 @@ module CasServer
       
       class << self
         # Extension to generate service ticket
-        def generate_for(ticket_granting_cookie, service)
-          ticket_granting_cookie.service_tickets.create!(:username => ticket_granting_cookie.username, :service => service)
+        def generate_for(ticket_granting_cookie, service_manager)
+          service_manager.check_authorization!(ticket_granting_cookie.username)
+          ticket_granting_cookie.service_tickets.create!(:username => ticket_granting_cookie.username, :service => service_manager.service_url.to_s)
         end
         
         def validate_ticket!(value, service)

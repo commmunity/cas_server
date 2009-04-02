@@ -10,9 +10,9 @@ describe CasServer::Rack::Api::Base do
   it "should call process! when rack app is executed with request, response and service_manager available" do
     @instance.should_receive(:process!)
     @instance.call(@mock_env)
-    @instance.request.should be_instance_of(CasServer::Rack::Request)
-    @instance.response.should be_instance_of(CasServer::Rack::Response)
-    @instance.service_manager.should be_kind_of(CasServer::Extension::ServiceManager::Base)
+    @instance.request.should be_a(CasServer::Rack::Request)
+    @instance.response.should be_a(CasServer::Rack::Response)
+    @instance.service_manager.should be_a(CasServer::Extension::ServiceManager::Base)
   end
   
   it "should catch exception with exception_handler" do
@@ -52,7 +52,7 @@ describe CasServer::Rack::Api::Base do
     end
     
     it 'is assigned in request env' do
-      @service_manager.should_receive(:validate!)
+      @service_manager.should_receive(:validate_service!)
       @instance.should_receive(:process!)
       @instance.call(@mock_env)
       @mock_env['cas_server.service_manager'].should be_a(CasServer::Extension::ServiceManager::Base)
@@ -62,7 +62,7 @@ describe CasServer::Rack::Api::Base do
       @instance.should_receive(:service_param_mandatory?).and_return(true)
       @instance.should_receive(:process!)
 
-      @service_manager.should_receive(:validate!)
+      @service_manager.should_receive(:validate_service!)
       @instance.call(@mock_env)
     end
 
@@ -70,7 +70,7 @@ describe CasServer::Rack::Api::Base do
       @instance.should_receive(:service_url?).and_return(true)
       @instance.should_receive(:process!)
 
-      @service_manager.should_receive(:validate!)
+      @service_manager.should_receive(:validate_service!)
       @instance.call(@mock_env)
     end
 
@@ -78,7 +78,7 @@ describe CasServer::Rack::Api::Base do
       @instance.should_receive(:service_url?).and_return(false)
       @instance.should_receive(:process!)
 
-      @service_manager.should_not_receive(:validate!)
+      @service_manager.should_not_receive(:validate_service!)
       @instance.call(@mock_env)
     end
     

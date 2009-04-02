@@ -3,12 +3,14 @@ require File.dirname(__FILE__) + '/../../../spec_helper'
 describe CasServer::Rack::Api::ServiceValidate do
   before do
     @service_url = 'http://toto.com'
+    @service_manager = mock(:service_manager, :check_authorization! => true, :service_url => @service_url, :validate_service! => true)
     @tgc= CasServer::Entity::TicketGrantingCookie.generate_for(@authenticator_mock)
-    @ts = CasServer::Entity::ServiceTicket.generate_for(@tgc,@service_url)
+    @ts = CasServer::Entity::ServiceTicket.generate_for(@tgc,@service_manager)
     @params = {'service' => @service_url, 'ticket' => @ts.value}
     @cookies = {}
     @env = Rack::MockRequest.env_for("http://example.com:8080/")
     @rack = CasServer::Rack::Api::ServiceValidate.new
+    @rack.stub!(:service_manager).and_return(@service_manager)
     @rack.stub!(:cookies).and_return(@cookies)
     @rack.stub!(:params).and_return(@params)
   end

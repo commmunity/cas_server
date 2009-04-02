@@ -1,61 +1,80 @@
 require File.dirname(__FILE__) + '/../../../spec_helper'
 
 describe CasServer::Extension::ServiceManager::Base do
-  before do
-    @rack_server = nil
+  before :each do
+    @rack_server = mock(:rack_server)
+  end
+  
+  def build_manager(url = 'http://www.service.com', rack_server = @rack_server)
+    CasServer::Extension::ServiceManager::Base.new(url, rack_server)
   end
   
   it 'raise a InvalidServiceURL if url is invalid' do
     lambda {
-      CasServer::Extension::ServiceManager::Base.new('http://', @rack_server)
+      build_manager('http://')
     }.should raise_error(CasServer::InvalidServiceURL)
     
     lambda {
-      CasServer::Extension::ServiceManager::Base.new('ftp://www.google.fr', @rack_server)
+      build_manager('ftp://service.com')
     }.should raise_error(CasServer::InvalidServiceURL)
   end
   
   it 'accepts valid URL' do
     lambda {
-      CasServer::Extension::ServiceManager::Base.new('http://www.google.com', @rack_server)
+      build_manager
     }.should_not raise_error
   end
   
   it 'accepts valid https URLs' do
     lambda {
-      CasServer::Extension::ServiceManager::Base.new('https://www.google.com', @rack_server)
+      build_manager('https://service.com')
     }.should_not raise_error
   end
   
   it 'accepts empty service' do
     lambda {
-      CasServer::Extension::ServiceManager::Base.new('', @rack_server)
-      CasServer::Extension::ServiceManager::Base.new(nil, @rack_server)
+      build_manager('')
+      build_manager(nil)
     }.should_not raise_error
   end
   
   it 'has a service url' do
-    CasServer::Extension::ServiceManager::Base.new('http://www.google.com', @rack_server).service_url.should == URI.parse('http://www.google.com')
-    CasServer::Extension::ServiceManager::Base.new(URI.parse('http://www.google.com'),@rack_server).service_url.should == URI.parse('http://www.google.com')
+    build_manager.service_url.should == URI.parse('http://www.service.com')
+    build_manager(URI.parse('http://www.service.com')).service_url.should == URI.parse('http://www.service.com')
   end
   
-  it "hasn't valid? implemented" do
+  it "hasn't valid_service? implemented" do
     lambda {
-      CasServer::Extension::ServiceManager::Base.new('http://www.google.com', @rack_server).valid?
-    }.should raise_error(NotImplementedError, 'CasServer::Extension::ServiceManager::Base#valid?')
+      build_manager.valid_service?
+    }.should raise_error(NotImplementedError, 'CasServer::Extension::ServiceManager::Base#valid_service?')
   end
   
   it 'can validate service url' do
-    service_manager = CasServer::Extension::ServiceManager::Base.new('http://google.com', @rack_server)
-    service_manager.should_receive(:valid?).and_return(true)
-    service_manager.validate!.should be_true
+    manager = build_manager
+    manager.should_receive(:valid_service?).and_return(true)
+    manager.validate_service!.should be_true
   end
   
   it 'can invalidate service url' do
-    service_manager = CasServer::Extension::ServiceManager::Base.new('http://google.com', @rack_server)
-    service_manager.should_receive(:valid?).and_return(false)
+    manager = build_manager
+    manager.should_receive(:valid_service?).and_return(false)
     lambda {
-      service_manager.validate!
+      manager.validate_service!
     }.should raise_error(CasServer::InvalidServiceURL)
   end
+  
+  it 'can unauthorize a user' do
+    manager = build_manager
+    manager.should_receive(:authorized?).and_return(false)
+    lambda {
+      manager.check_authorization!(42)
+    }.should raise_error(CasServer::AuthorizationRequired)
+  end
+
+  it "hasn't authorized? implemented" do
+    lambda {
+      build_manager.authorized?(42)
+    }.should raise_error(NotImplementedError, 'CasServer::Extension::ServiceManager::Base#authorized?')
+  end
+  
 end
