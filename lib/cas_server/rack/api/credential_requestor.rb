@@ -24,7 +24,7 @@ module CasServer
               return(redirect_to service_ticket.service_url_with_service_ticket)
             else
               #display message saying your logged, should not really occurred
-              warnings << 'cas_server.warnings.logged_without_service'
+              warnings << 'cas_server.warning.logged_without_service'
               return
             end
           elsif gateway? && !renew?
