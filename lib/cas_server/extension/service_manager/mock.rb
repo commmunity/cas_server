@@ -4,6 +4,10 @@ class CasServer::Extension::ServiceManager::Mock < CasServer::Extension::Service
     true
   end
   
+  def default_authenticator
+    :mock
+  end
+  
   def valid_service?
     true
   end

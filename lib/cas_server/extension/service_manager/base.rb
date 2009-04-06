@@ -35,6 +35,10 @@ module CasServer
           @service
         end
         
+        def default_authenticator
+          raise NotImplementedError.new("#{self.class.name}#default_authenticator")
+        end
+        
         def check_authorization!(username)
           raise CasServer::AuthorizationRequired.new unless authorized?(username)
           true

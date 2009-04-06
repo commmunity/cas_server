@@ -130,7 +130,7 @@ module CasServer
           def current_authenticator
             @current_authenticator ||= ((params['auth'].present?) ?
               CasServer::Extension::Authenticator.find(params['auth']) :
-              CasServer::Extension::Authenticator.default).new(self)
+              CasServer::Extension::Authenticator.find(service_manager.default_authenticator)).new(self)
           end
           
           def handle_response

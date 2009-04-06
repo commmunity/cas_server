@@ -7,9 +7,11 @@ describe CasServer::Rack::Api::CredentialAcceptor do
     @cookies = {}
     @env = Rack::MockRequest.env_for("http://example.com:8080/")
     @rack = CasServer::Rack::Api::CredentialAcceptor.new
+    @service_manager = CasServer::Extension::ServiceManager::Mock.new(@service_url, @rack)
+    @service_manager.stub!(:default_authenticator).and_return(:cas)
     @rack.stub!(:cookies).and_return(@cookies)
     @rack.stub!(:params).and_return(@params)
-    CasServer::Extension::Authenticator.stub!(:default).and_return(CasServer::Extension::Authenticator::Cas)
+    @rack.stub!(:service_manager).and_return(@service_manager)
   end
   
   describe "while acting as a credential acceptor for username/password authentication" do
