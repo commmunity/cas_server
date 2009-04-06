@@ -82,5 +82,14 @@ describe CasServer::Rack::Api::Base do
       @instance.call(@mock_env)
     end
     
+    it 'is invoked for fetching default authenticator' do
+      @instance.should_receive(:process!)
+      @service_manager.should_receive(:validate_service!)
+      @service_manager.should_receive(:default_authenticator).and_return(:cas)
+      
+      @instance.call(@mock_env)
+      @instance.send(:current_authenticator).should be_a(CasServer::Extension::Authenticator::Cas)
+    end
+    
   end
 end
