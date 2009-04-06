@@ -10,6 +10,10 @@ module CasServer
     def i18n_identifier
       self.class.i18n_identifier
     end
+    
+    def i18n_options
+      @i18n_options ||= {}
+    end
   
     module ClassMethods
       def i18n_identifier

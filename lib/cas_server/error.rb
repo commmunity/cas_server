@@ -22,8 +22,8 @@ module CasServer
       'INVALID_REQUEST'
     end
     def initialize(param, msg = nil)
-      @param = param
       super(msg)
+      self.i18n_options[:param] = param
     end
   end
 
