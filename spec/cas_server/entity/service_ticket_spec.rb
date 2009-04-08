@@ -103,15 +103,15 @@ describe CasServer::Entity::ServiceTicket do
     end
     
     it "must work with empty params" do
-      CasServer::Entity::ServiceTicket.new(:service => 'http://service.com?toto=', :value => '2').service_url_with_service_ticket.should == 'http://service.com?ticket=2&toto='
+      CasServer::Entity::ServiceTicket.new(:service => 'http://service.com?toto=', :value => '2').service_url_with_service_ticket.should == 'http://service.com?toto=&ticket=2'
     end
     
     it "must work with params" do
-      CasServer::Entity::ServiceTicket.new(:service => 'http://service.com?toto=1', :value => '2').service_url_with_service_ticket.should == 'http://service.com?ticket=2&toto=1'
+      CasServer::Entity::ServiceTicket.new(:service => 'http://service.com?toto=1', :value => '2').service_url_with_service_ticket.should == 'http://service.com?toto=1&ticket=2'
     end
     
     it "must work with existing ticket" do
-      CasServer::Entity::ServiceTicket.new(:service => 'http://service.com?ticket=1&toto=2', :value => '2').service_url_with_service_ticket.should == 'http://service.com?ticket=2&toto=2'
+      CasServer::Entity::ServiceTicket.new(:service => 'http://service.com?ticket=1&toto=2', :value => '2').service_url_with_service_ticket.should == 'http://service.com?toto=2&ticket=2'
     end
   end
 end

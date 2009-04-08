@@ -1,4 +1,5 @@
 require 'uri'
+require 'cgi'
 # 3.1. service ticket
 # A service ticket is an opaque string that is used by the client as a credential to obtain 
 # access to a service. The service ticket is obtained from CAS upon a client's presentation 
@@ -28,14 +29,11 @@ module CasServer
 
         begin
           raw_uri = URI.parse(service)
-          query_string = raw_uri.query || ''
-          params = query_string.split('&').inject({}) do |h, chunk| 
-            key, value = chunk.split('=', 2)
-            h[key] = value
-            h
-          end
-          params['ticket'] = value
-          raw_uri.query= params.to_query
+          query = raw_uri.query || ''
+          query.gsub!(/[\&]?ticket=[^\&]*\&?/, '')
+          query << '&' unless query.empty?
+          query << 'ticket=' << CGI.escape(value)
+          raw_uri.query = query
           raw_uri.to_s
         rescue URI::InvalidURIError
           nil
