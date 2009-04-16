@@ -41,6 +41,20 @@ describe CasServer::Entity::ServiceTicket do
       @service_manager.should_receive(:check_authorization!).with(@ticket_granting_ticket.username)
       CasServer::Entity::ServiceTicket.generate_for(*@valid_args)
     end
+    
+    it 'is valid if service url is https against http' do
+      @service_manager.should_receive(:service_url).and_return('https://service.com')
+      lambda do
+        CasServer::Entity::ServiceTicket.validate_ticket!(@ticket.value, @service_manager)
+      end.should_not raise_error(CasServer::InvalidService)
+    end
+    
+    it 'is not valid if service url scheme is different' do
+      @service_manager.should_receive(:service_url).and_return('ftp://service.com')
+      lambda do
+        CasServer::Entity::ServiceTicket.validate_ticket!(@ticket.value, @service_manager)
+      end.should raise_error(CasServer::InvalidService)
+    end
   end
   
   #3.1.1

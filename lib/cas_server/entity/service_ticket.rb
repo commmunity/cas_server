@@ -20,6 +20,11 @@ module CasServer
         attributes.merge(service_manager.extra_attributes_for(ticket_granting_cookie.username))
       end
       
+      def match_service?(service_url)
+        pattern = /^https?:\/\//i
+        service.to_s.gsub(pattern, '') == service_url.to_s.gsub(pattern, '')
+      end
+      
       def ticket_prefix
         'ST-'
       end
@@ -50,7 +55,7 @@ module CasServer
         def validate_ticket!(value, service_manager)
           ticket = value && find_by_value(value)
           raise CasServer::InvalidTicket.new(self.new) if ticket.nil?
-          if ticket.service.to_s != service_manager.service_url.to_s
+          unless ticket.match_service?(service_manager.service_url)
             ticket.destroy
             raise CasServer::InvalidService.new(ticket)
           end 
