@@ -140,15 +140,14 @@ Another part of the design is the service manager, it is loaded when a service_u
 ## Pending
 
 - There is no support for Proxy authentication right now
-- There is no single sign out, when a user logout previous service ticket remains active, and local service session too
-
+- There is no single sign out, when a user logout previous service ticket remains active, and local service session too. This is not really an issue with cas_server as the design can handle it: ticket_granting_cookie (i.e. cas sso cookie) store theirs relations with service_ticket it generates. The main issue with single sign out is on the app side, as application must store a relation between local session and validated service ticket which can be quite cucumbersome or impossible in case of default rails session cookie.
 
 ## FIX ME
 
 - There is a flow in SSO cookie, they never expires, which means that sessions will always be available.
 We need to fix this
 
-- It supports extend profile (on serviceValidate) but rubycas-client has an issue with the xml namespace (easy to fix). I use my own client (not released) so I didn't fixed it.
+- It supports extend profile (on serviceValidate) but rubycas-client has an issue with the xml namespace (easy to fix). I use my own client (not released yet) so I didn't fixed it.
 
 # Example
 
