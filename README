@@ -135,6 +135,39 @@ Another part of the design is the service manager, it is loaded when a service_u
       end
     end
 
+# Share profile and not only authentication
+
+cas_server supports attributes sharing. When a service provider (your app that consume identities) request ServiceValidate after an authentication, you can provide the service provider with extra attributes.
+
+Basic use of it is central profile management and not just central authentication management. Your central user base has more than just username/password, probably stuff like avatar url and emails. When the user authentify on cas server and is redirected to service provider, the service profider check the service ticket (by requesting serviceValidate).
+
+Cas spec request the following response from cas server:
+
+  <?xml version="1.0" encoding="UTF-8"?>
+  <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
+    <cas:authenticationSuccess>
+      <cas:user>uuid</cas:user>
+    </cas:authenticationSuccess>
+  </cas:serviceResponse>
+  
+Cas server has an extra part in the response which is NOT in CAS 2.0 spec:
+
+  <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
+    <cas:authenticationSuccess>
+      <cas:user>uuid</cas:user>
+      <sc:profile xmlns:sc="http://slashcommunity.com/api/v1/profile">
+        <email>email@domain.com</email>
+        ...
+      </sc:profile>
+    </cas:authenticationSuccess>
+  </cas:serviceResponse>
+
+The format of this extra response is "standard" ActiveSupport hash xml serialization. Currently the xml namespace sc:profile xmlns:sc="http://slashcommunity.com/api/v1/profile" breaks rubycas-client but fixing it is easy.
+
+With the service manager you can even add/remove specific attributes depending of the target service_url (useful to manage application autorization or membership, ...)
+
+This is particularly usefull when you implement authenticator like facebook or open id with attribute extension or even LDAP. It's your choice to give meaning to the different attributes as a role name if you want to centralize authorization.
+
 # Remarks
 
 ## Pending
@@ -147,9 +180,7 @@ Another part of the design is the service manager, it is loaded when a service_u
 - There is a flow in SSO cookie, they never expires, which means that sessions will always be available.
 We need to fix this
 
-- It supports extend profile (on serviceValidate) but rubycas-client has an issue with the xml namespace (easy to fix). I use my own client (not released yet) so I didn't fixed it.
-
-# Example
+- It supports extended profile (on serviceValidate) but rubycas-client has an issue with the xml namespace (easy to fix). I use my own client (not released yet) so I didn't fixed it.
 
 
 Copyright (c) 2009 Renaud Morvan, Dimelo
