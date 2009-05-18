@@ -2,21 +2,60 @@
 
 Simple implementation of a Cas Authentication Server. It does not depend on rails but only on active_support and active_record
 
-cas_server is not really meant to be used as a standalone server castronaut or rubycas-server are better for that. cas_server purpose is to be the central authentication point of your own plateform, with your own business logic.
+cas_server is not really designed to be used as a out of the box standalone server castronaut or rubycas-server are better for that. cas_server purpose is to be the central authentication component of your own plateform, responding to your own business logic.
 
-I personnaly use it for a multiapplication multidomain sass plateform with shared user, facebook authentication... Typical use would be a lighthouse/tenderapp shared user base with each application maintaining its own logic.
+I personnaly use it for a multi application multidomain sass plateform with shared user, facebook authentication... Typical use would be a lighthouse/tenderapp with centralized user management and shared user base while each application maintaining its own specific user logic but without duplicating all authentication related logic and sharing user attributes (avatar, email, ...).
 
 # Usage
 
-cas_server does not handle view rendering (login screen) and return a 404 in this case. This is particularly suitable for being embedded as a Rails Metal.
+cas_server does not handle view rendering (login screen) and return a 404 in this case. This is particularly suitable for being embedded as a Rails Metal in Rails app that will handle user creation and plateform logic.
 
-    #adapter to rails metal
+    #Rails metal adapter
     class Metal < Rails::Rack::Metal
       def self.call(env)
         CasServer::Rack::ActiveRecord.new(CasServer::Rack::Router.new).call(env)
       end
     end
 
+    # Cas wrapper controller in the rails app
+    class CasController < ApplicationController
+      # 2.1. /login as credential requestor
+      def credential_requestor
+         #render login screen(s) view, you can have different screen if you have several authenticator, or a shared screen, or none if your authenticator is a pure sso (like facebook, cookie authentication, ...)
+      end
+
+      # 2.3. /logout
+      def logout
+        #render logout view
+      end
+    end
+    
+    # Cas route
+    map.with_options :controller => 'cas' do |cas|
+      cas.connect 'cas/login', :action => 'credential_requestor'
+      cas.connect 'cas/logout', :action => 'logout'
+      cas.connect 'cas/:attempt', :action => 'credential_requestor'
+    end
+
+Views as login screen is delegated to upper stack (rails metal i.e.)
+Basic implementation only pass :username, :password to cas (login_ticket is a cas spec token to ensure post are not replayed. This can be by passed if need be)
+
+    <h2>Login</h2>
+    <% form_tag '/cas/login', :method => :post do %>
+        <fieldset>
+            <%= hidden_field_tag :lt, login_ticket %>
+            <%= hidden_field_tag :service, params[:service] %>
+            <%= hidden_field_tag :auth, 'base' %>
+
+            <%= text_field_tag :username, params[:username], :class => 'textInput' %>
+            <%= password_field_tag :password, '', :class => 'textInput' %>
+
+            <%= submit login %>
+        </fieldset>
+    <% end %>
+    <p>
+        <%= link_to('signup!', signup_url(:service => params[:service]))) %>
+    </p>
     
 cas_server has been designed to support any kind of authentication as an input (open_id, facebook id, ...) and use authenticator to implement them.
 
@@ -95,28 +134,6 @@ Another part of the design is the service manager, it is loaded when a service_u
         end
       end
     end
-
-# View
-
-Views as login screen is delegated to upper stack (rails metal i.e.)
-Basic implementation only pass :username, :password to cas (login_ticket is a cas spec token to ensure post are not replayed. This can be by passed if need be)
-
-<h2>Login</h2>
-<% form_tag '/cas/login', :method => :post do %>
-    <fieldset>
-        <%= hidden_field_tag :lt, login_ticket %>
-        <%= hidden_field_tag :service, params[:service] %>
-        <%= hidden_field_tag :auth, 'base' %>
-
-        <%= text_field_tag :username, params[:username], :class => 'textInput' %>
-        <%= password_field_tag :password, '', :class => 'textInput' %>
-        
-        <%= submit login %>
-    </fieldset>
-<% end %>
-<p>
-    <%= link_to('signup!', signup_url(:service => params[:service]))) %>
-</p>
 
 # Remarks
 
