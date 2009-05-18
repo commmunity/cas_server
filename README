@@ -13,9 +13,10 @@ cas_server does not handle view rendering (login screen) and return a 404 in thi
     #adapter to rails metal
     class Metal < Rails::Rack::Metal
       def self.call(env)
-        CasServer::Rack::Lighttpd.new(CasServer::Rack::ActiveRecord.new(CasServer::Rack::Router.new)).call(env)
+        CasServer::Rack::ActiveRecord.new(CasServer::Rack::Router.new).call(env)
       end
     end
+
     
 cas_server has been designed to support any kind of authentication as an input (open_id, facebook id, ...) and use authenticator to implement them.
 
