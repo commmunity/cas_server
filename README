@@ -2,21 +2,138 @@
 
 Simple implementation of a Cas Authentication Server. It does not depend on rails but only on active_support and active_record
 
+cas_server is not really meant to be used as a standalone server castronaut or rubycas-server are better for that. cas_server purpose is to be the central authentication point of your own plateform, with your own business logic.
+
+I personnaly use it for a multiapplication multidomain sass plateform with shared user, facebook authentication... Typical use would be a lighthouse/tenderapp shared user base with each application maintaining its own logic.
+
+# Usage
+
+cas_server does not handle view rendering (login screen) and return a 404 in this case. This is particularly suitable for being embedded as a Rails Metal.
+
+    #adapter to rails metal
+    class Metal < Rails::Rack::Metal
+      def self.call(env)
+        CasServer::Rack::Lighttpd.new(CasServer::Rack::ActiveRecord.new(CasServer::Rack::Router.new)).call(env)
+      end
+    end
+    
+cas_server has been designed to support any kind of authentication as an input (open_id, facebook id, ...) and use authenticator to implement them.
+
+The basic structure of an authenticator is:
+
+    module Auth
+      module Authenticator
+        class Base < CasServer::Extension::Authenticator::Base
+      
+          #you have access here to service_manager
+      
+          def email
+            params['username']
+          end
+      
+          def password
+            params['password']
+          end
+      
+          def identity
+            @identity ||= User.authenticate(email, password)
+          end
+      
+          def authenticate?
+            identity.present?
+          end
+      
+          def extra_attributes
+            identity.attributes.slice('id', 'firstname', 'lastname', 'email', 'avatar_url', 'about')
+          end
+      
+          def uuid
+            identity.id
+          end
+      
+        end
+      end
+    end
+
+Another part of the design is the service manager, it is loaded when a service_url is given and should be used for business specific logic (which authenticator is authorized for which service_url), which service_url is allowed ...
+
+    module Auth
+      module ServiceManager
+        class Slashcommunity < CasServer::Extension::ServiceManager::Base
+      
+          def authenticator_enabled?(authenticator_model)
+            #authenticator authorized on this service_url ?
+            true
+          end
+      
+          def authorized?(uuid)
+            #uuid authorized on this domain ?
+            true
+          end
+      
+          def default_authenticator
+            #what is the default authenticator i.e. without specific params
+            :base
+          end
+      
+          def extra_attributes_for(uuid)
+            #add service_url specific attribute for a given uuid
+            {}
+          end
+
+          def valid_service?
+            #do it respond to this service_url or not ?
+            true
+          end
+      
+          private
+      
+          def current_authenticator_model
+            current_authenticator && current_authenticator.class.model
+          end
+        end
+      end
+    end
+
+# View
+
+Views as login screen is delegated to upper stack (rails metal i.e.)
+Basic implementation only pass :username, :password to cas (login_ticket is a cas spec token to ensure post are not replayed. This can be by passed if need be)
+
+<h2>Login</h2>
+<% form_tag '/cas/login', :method => :post do %>
+    <fieldset>
+        <%= hidden_field_tag :lt, login_ticket %>
+        <%= hidden_field_tag :service, params[:service] %>
+        <%= hidden_field_tag :auth, 'base' %>
+
+        <%= text_field_tag :username, params[:username], :class => 'textInput' %>
+        <%= password_field_tag :password, '', :class => 'textInput' %>
+        
+        <%= submit login %>
+    </fieldset>
+<% end %>
+<p>
+    <%= link_to('signup!', signup_url(:service => params[:service]))) %>
+</p>
+
 # Remarks
 
 ## Pending
 
 - There is no support for Proxy authentication right now
 - There is no single sign out, when a user logout previous service ticket remains active, and local service session too
-- Profile management has to be handled and transmitted during /serviceValidate, the design issue to be solved is that it's tgt that could have access to it through authenticator.
 
-## SSO
 
-There is a flow in SSO cookie, they never expires, which means that sessions will always be available.
+## FIX ME
+
+- There is a flow in SSO cookie, they never expires, which means that sessions will always be available.
 We need to fix this
+
+- It supports extend profile (on serviceValidate) but rubycas-client has an issue with the xml namespace (easy to fix). I use my own client (not released) so I didn't fixed it.
 
 # Example
 
 
-Copyright (c) 2009 Renaud Morvan
-test
+Copyright (c) 2009 Renaud Morvan, Dimelo
+Licenced under MIT
