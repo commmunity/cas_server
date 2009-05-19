@@ -40,9 +40,7 @@ module CasServer
     autoload :Router,               "#{CAS_SERVER_PATH}/rack/router"
     autoload :RouteCriteria,        "#{CAS_SERVER_PATH}/rack/route_criteria"
     autoload :Profiler,             "#{CAS_SERVER_PATH}/rack/profiler"
-    autoload :ActiveRecord,         "#{CAS_SERVER_PATH}/rack/active_record"
-    autoload :Lighttpd,         "#{CAS_SERVER_PATH}/rack/lighttpd"
-    
+    autoload :ActiveRecord,         "#{CAS_SERVER_PATH}/rack/active_record" 
   end
     
   autoload :Configuration,          "#{CAS_SERVER_PATH}/configuration"
