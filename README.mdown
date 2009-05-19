@@ -1,14 +1,14 @@
 # CasServer
 
-Simple implementation of a Cas Authentication Server. It does not depend on rails but only on active_support and active_record
+Simple implementation of a Cas Authentication Server. It does not depend on rails but only on active\_support and active\_record
 
-cas_server is not really designed to be used as a out of the box standalone server castronaut or rubycas-server are better for that. cas_server purpose is to be the central authentication component of your own plateform, responding to your own business logic.
+cas\_server is not really designed to be used as a out of the box standalone server castronaut or rubycas-server are better for that. cas\_server purpose is to be the central authentication component of your own plateform, responding to your own business logic.
 
 I personnaly use it for a multi application multidomain sass plateform with shared user, facebook authentication... Typical use would be a lighthouse/tenderapp with centralized user management and shared user base while each application maintaining its own specific user logic but without duplicating all authentication related logic and sharing user attributes (avatar, email, ...).
 
 # Usage
 
-cas_server does not handle view rendering (login screen) and return a 404 in this case. This is particularly suitable for being embedded as a Rails Metal in Rails app that will handle user creation and plateform logic.
+cas\_server does not handle view rendering (login screen) and return a 404 in this case. This is particularly suitable for being embedded as a Rails Metal in Rails app that will handle user creation and plateform logic.
 
     #Rails metal adapter
     class Metal < Rails::Rack::Metal
@@ -38,7 +38,7 @@ cas_server does not handle view rendering (login screen) and return a 404 in thi
     end
 
 Views as login screen is delegated to upper stack (rails metal i.e.)
-Basic implementation only pass :username, :password to cas (login_ticket is a cas spec token to ensure post are not replayed. This can be by passed if need be)
+Basic implementation only pass :username, :password to cas (login\_ticket is a cas spec token to ensure post are not replayed. This can be by passed if need be)
 
     <h2>Login</h2>
     <% form_tag '/cas/login', :method => :post do %>
@@ -57,7 +57,7 @@ Basic implementation only pass :username, :password to cas (login_ticket is a ca
         <%= link_to('signup!', signup_url(:service => params[:service]))) %>
     </p>
     
-cas_server has been designed to support any kind of authentication as an input (open_id, facebook id, ...) and use authenticator to implement them.
+cas\_server has been designed to support any kind of authentication as an input (open\_id, facebook id, ...) and use authenticator to implement them.
 
 The basic structure of an authenticator is:
 
@@ -95,7 +95,7 @@ The basic structure of an authenticator is:
       end
     end
 
-Another part of the design is the service manager, it is loaded when a service_url is given and should be used for business specific logic (which authenticator is authorized for which service_url), which service_url is allowed ...
+Another part of the design is the service manager, it is loaded when a service\_url is given and should be used for business specific logic (which authenticator is authorized for which service\_url), which service\_url is allowed ...
 
     module Auth
       module ServiceManager
@@ -125,46 +125,40 @@ Another part of the design is the service manager, it is loaded when a service_u
             #do it respond to this service_url or not ?
             true
           end
-      
-          private
-      
-          def current_authenticator_model
-            current_authenticator && current_authenticator.class.model
-          end
         end
       end
     end
 
 # Share profile and not only authentication
 
-cas_server supports attributes sharing. When a service provider (your app that consume identities) request ServiceValidate after an authentication, you can provide the service provider with extra attributes.
+cas\_server supports attributes sharing. When a service provider (your app that consume identities) request ServiceValidate after an authentication, you can provide the service provider with extra attributes.
 
 Basic use of it is central profile management and not just central authentication management. Your central user base has more than just username/password, probably stuff like avatar url and emails. When the user authentify on cas server and is redirected to service provider, the service profider check the service ticket (by requesting serviceValidate).
 
 Cas spec request the following response from cas server:
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
-    <cas:authenticationSuccess>
-      <cas:user>uuid</cas:user>
-    </cas:authenticationSuccess>
-  </cas:serviceResponse>
+    <?xml version="1.0" encoding="UTF-8"?>
+    <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
+      <cas:authenticationSuccess>
+        <cas:user>uuid</cas:user>
+      </cas:authenticationSuccess>
+    </cas:serviceResponse>
   
 Cas server has an extra part in the response which is NOT in CAS 2.0 spec:
 
-  <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
-    <cas:authenticationSuccess>
-      <cas:user>uuid</cas:user>
-      <sc:profile xmlns:sc="http://slashcommunity.com/api/v1/profile">
-        <email>email@domain.com</email>
-        ...
-      </sc:profile>
-    </cas:authenticationSuccess>
-  </cas:serviceResponse>
+    <cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
+      <cas:authenticationSuccess>
+        <cas:user>uuid</cas:user>
+        <sc:profile xmlns:sc="http://slashcommunity.com/api/v1/profile">
+          <email>email@domain.com</email>
+          ...
+        </sc:profile>
+      </cas:authenticationSuccess>
+    </cas:serviceResponse>
 
 The format of this extra response is "standard" ActiveSupport hash xml serialization. Currently the xml namespace sc:profile xmlns:sc="http://slashcommunity.com/api/v1/profile" breaks rubycas-client but fixing it is easy.
 
-With the service manager you can even add/remove specific attributes depending of the target service_url (useful to manage application autorization or membership, ...)
+With the service manager you can even add/remove specific attributes depending of the target service\_url (useful to manage application autorization or membership, ...)
 
 This is particularly usefull when you implement authenticator like facebook or open id with attribute extension or even LDAP. It's your choice to give meaning to the different attributes as a role name if you want to centralize authorization.
 
@@ -173,7 +167,7 @@ This is particularly usefull when you implement authenticator like facebook or o
 ## Pending
 
 - There is no support for Proxy authentication right now
-- There is no single sign out, when a user logout previous service ticket remains active, and local service session too. This is not really an issue with cas_server as the design can handle it: ticket_granting_cookie (i.e. cas sso cookie) store theirs relations with service_ticket it generates. The main issue with single sign out is on the app side, as application must store a relation between local session and validated service ticket which can be quite cucumbersome or impossible in case of default rails session cookie.
+- There is no single sign out, when a user logout previous service ticket remains active, and local service session too. This is not really an issue with cas\_server as the design can handle it: ticket\_granting\_cookie (i.e. cas sso cookie) store theirs relations with service\_ticket it generates. The main issue with single sign out is on the app side, as application must store a relation between local session and validated service ticket which can be quite cucumbersome or impossible in case of default rails session cookie.
 
 ## FIX ME
 
