@@ -1,12 +1,20 @@
 # CasServer
 
+## Get it at 
+
+[http://github.com/community/cas_server](http://github.com/community/cas_server "CasServer")
+
+## Introduction
+
 Simple implementation of a Cas Authentication Server. It does not depend on rails but only on active\_support and active\_record
 
 cas\_server is not really designed to be used as a out of the box standalone server castronaut or rubycas-server are better for that. cas\_server purpose is to be the central authentication component of your own plateform, responding to your own business logic.
 
 I personnaly use it for a multi application multidomain sass plateform with shared user, facebook authentication... Typical use would be a lighthouse/tenderapp with centralized user management and shared user base while each application maintaining its own specific user logic but without duplicating all authentication related logic and sharing user attributes (avatar, email, ...).
 
-# Usage
+## Usage
+
+### Packaging
 
 cas\_server does not handle view rendering (login screen) and return a 404 in this case. This is particularly suitable for being embedded as a Rails Metal in Rails app that will handle user creation and plateform logic.
 
@@ -56,6 +64,8 @@ Basic implementation only pass :username, :password to cas (login\_ticket is a c
     <p>
         <%= link_to('signup!', signup_url(:service => params[:service]))) %>
     </p>
+
+### Authenticator
     
 cas\_server has been designed to support any kind of authentication as an input (open\_id, facebook id, ...) and use authenticator to implement them.
 
@@ -95,6 +105,9 @@ The basic structure of an authenticator is:
       end
     end
 
+
+### Service Manager
+
 Another part of the design is the service manager, it is loaded when a service\_url is given and should be used for business specific logic (which authenticator is authorized for which service\_url), which service\_url is allowed ...
 
     module Auth
@@ -129,7 +142,7 @@ Another part of the design is the service manager, it is loaded when a service\_
       end
     end
 
-# Share profile and not only authentication
+## Share profile and not only authentication
 
 cas\_server supports attributes sharing. When a service provider (your app that consume identities) request ServiceValidate after an authentication, you can provide the service provider with extra attributes.
 
@@ -162,19 +175,20 @@ With the service manager you can even add/remove specific attributes depending o
 
 This is particularly usefull when you implement authenticator like facebook or open id with attribute extension or even LDAP. It's your choice to give meaning to the different attributes as a role name if you want to centralize authorization.
 
-# Remarks
+## Remarks
 
-## Pending
+### TODO
 
 - There is no support for Proxy authentication right now
 - There is no single sign out, when a user logout previous service ticket remains active, and local service session too. This is not really an issue with cas\_server as the design can handle it: ticket\_granting\_cookie (i.e. cas sso cookie) store theirs relations with service\_ticket it generates. The main issue with single sign out is on the app side, as application must store a relation between local session and validated service ticket which can be quite cucumbersome or impossible in case of default rails session cookie.
 
-## FIX ME
+### FIXME
 
 - There is a flow in SSO cookie, they never expires, which means that sessions will always be available.
 We need to fix this
 
-- It supports extended profile (on serviceValidate) but rubycas-client has an issue with the xml namespace (easy to fix). I use my own client (not released yet) so I didn't fixed it.
+- It supports extended profile (on serviceValidate) but rubycas-client has an issue with the xml namespace (easy to fix). We use our own client to interact with CasServer (you can grab it at [http://github.com/community/cas_client](http://github.com/community/cas_client "CasClient")
+but the rubycas-client slight incompatibility with extra attribute is easy to work around.
 
 
 Copyright (c) 2009 Renaud Morvan, Dimelo
